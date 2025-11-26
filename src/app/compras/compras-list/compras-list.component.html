@@ -1,1 +1,94 @@
-<p>compras-list works!</p>
+<h2>Registro de Compras</h2>
+
+<!-- CABECERA DE COMPRA -->
+<div style="border:1px solid #ccc; padding:1rem; margin-bottom: 20px;">
+  <h3>Nueva Compra</h3>
+
+  <label>Proveedor:</label>
+  <select [(ngModel)]="compra.id_proveedor" name="id_proveedor">
+    <option value="0">Seleccione proveedor</option>
+    <option *ngFor="let p of proveedores" [value]="p.id_proveedor">
+      {{ p.nombre }}
+    </option>
+  </select>
+
+  <label>N° Documento:</label>
+  <input type="text" [(ngModel)]="compra.nro_documento" />
+
+</div>
+
+<!-- DETALLES -->
+<h3>Detalle de Compra</h3>
+
+<div style="border:1px solid #ccc; padding:1rem;">
+
+  <div style="display:flex; gap:1rem">
+    <select [(ngModel)]="nuevoDetalle.id_producto">
+      <option value="0">Producto</option>
+      <option *ngFor="let p of productos" [value]="p.id_producto">
+        {{ p.nombre }}
+      </option>
+    </select>
+
+    <input type="number" [(ngModel)]="nuevoDetalle.cantidad" min="1" />
+    <input type="number" [(ngModel)]="nuevoDetalle.costo_unitario" min="0" step="0.01" />
+
+    <button (click)="agregarDetalle()">Agregar</button>
+  </div>
+
+  <table border="1" width="100%" style="margin-top:20px">
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Cant.</th>
+        <th>Costo</th>
+        <th>Subtotal</th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+        <tr *ngFor="let d of detalles; let i = index">
+            <td>{{ getNombreProducto(d.id_producto) }}</td>
+            <td>{{ d.cantidad }}</td>
+            <td>{{ d.costo_unitario }}</td>
+            <td>{{ d.subtotal }}</td>
+            <td>
+            <button (click)="eliminarDetalle(i)">🗑️</button>
+            </td>
+        </tr>
+    </tbody>
+
+  </table>
+
+  <h3>Total: S/. {{ compra.total }}</h3>
+
+  <button (click)="guardarCompra()">Guardar Compra</button>
+</div>
+
+<hr />
+
+<!-- LISTA DE COMPRAS -->
+<h2>Historial de Compras</h2>
+
+<table border="1" width="100%">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Proveedor</th>
+      <th>Fecha</th>
+      <th>Documento</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let c of compras">
+      <td>{{ c.id_compra }}</td>
+      <td>{{ c.proveedores?.nombre }}</td>
+      <td>{{ c.fecha | date:'short' }}</td>
+      <td>{{ c.nro_documento }}</td>
+      <td>S/. {{ c.total }}</td>
+    </tr>
+  </tbody>
+</table>

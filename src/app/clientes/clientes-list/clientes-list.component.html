@@ -1,1 +1,68 @@
-<p>clientes-list works!</p>
+<h2>Gestión de Clientes</h2>
+
+<button (click)="nuevoCliente()">➕ Nuevo Cliente</button>
+
+<!-- FORMULARIO -->
+<div style="margin-top:20px; border:1px solid #ccc; padding:1rem;">
+  <h3>{{ modoEdicion ? 'Editar Cliente' : 'Nuevo Cliente' }}</h3>
+
+  <form (ngSubmit)="guardarCliente()">
+
+    <label>Nombre:</label>
+    <input type="text" [(ngModel)]="cliente.nombre" name="nombre" required />
+
+    <label>Tipo:</label>
+    <select [(ngModel)]="cliente.tipo" name="tipo">
+      <option [ngValue]="null">-- Seleccione --</option>
+      <option value="natural">Natural</option>
+      <option value="empresa">Empresa</option>
+    </select>
+
+    <label>Documento:</label>
+    <input type="text" [(ngModel)]="cliente.documento" name="documento" />
+
+    <label>Teléfono:</label>
+    <input type="text" [(ngModel)]="cliente.telefono" name="telefono" />
+
+    <label>Dirección:</label>
+    <input type="text" [(ngModel)]="cliente.direccion" name="direccion" />
+
+    <button type="submit">
+      {{ modoEdicion ? 'Actualizar' : 'Registrar' }}
+    </button>
+
+  </form>
+</div>
+
+<hr />
+
+<!-- TABLA -->
+<table border="1" width="100%" style="margin-top:20px">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Tipo</th>
+      <th>Documento</th>
+      <th>Teléfono</th>
+      <th>Dirección</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let c of clientes">
+      <td>{{ c.id_cliente }}</td>
+      <td>{{ c.nombre }}</td>
+      <td>{{ c.tipo }}</td>
+      <td>{{ c.documento }}</td>
+      <td>{{ c.telefono }}</td>
+      <td>{{ c.direccion }}</td>
+
+      <td>
+        <button (click)="editarCliente(c)">✏️ Editar</button>
+        <button (click)="eliminarCliente(c.id_cliente!)">🗑️ Eliminar</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
