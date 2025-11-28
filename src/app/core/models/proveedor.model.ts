@@ -1,3 +1,5 @@
+
+/*
 export interface Proveedor {
   id_proveedor?: number;
   nombre: string;
@@ -12,6 +14,20 @@ export interface Proveedor {
   // - activo (boolean, default true) -> activo
   tipoDocumento?: string;
   numeroDocumento?: string;
+  correo?: string;
+  activo?: boolean;
+}
+*/
+export interface Proveedor {
+  id_proveedor?: number;
+  nombre: string;
+  contacto?: string;
+  telefono?: string;
+  direccion?: string;
+
+  // Campos nuevos en snake_case (compatible Supabase)
+  tipo_documento?: string;
+  numero_documento?: string;
   correo?: string;
   activo?: boolean;
 }

@@ -1,3 +1,4 @@
+/*
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -22,7 +23,7 @@ export class ProveedoresComponent implements OnInit {
    *
    * (Opcional si quieres búsqueda DNI/RUC real)
    * - fuente_consulta (text) -> 'manual' | 'dni' | 'ruc' (solo si deseas auditar cómo se creó)
-   */
+   
 
   proveedores: Proveedor[] = [];
   proveedoresFiltrados: Proveedor[] = [];
@@ -276,5 +277,212 @@ export class ProveedoresComponent implements OnInit {
   exportarExcel() {
     // lo dejas como lo tengas en tu proyecto
     console.log('Exportar Excel (pendiente o existente)');
+  }
+}
+*/
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ProveedoresService } from '../../core/services/inventario/proveedores.service';
+import { Proveedor } from '../../core/models/proveedor.model';
+
+@Component({
+  selector: 'app-proveedores',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './proveedores.component.html'
+})
+export class ProveedoresComponent implements OnInit {
+
+  proveedores: Proveedor[] = [];
+  proveedoresFiltrados: Proveedor[] = [];
+  loading = true;
+
+  terminoBusqueda = '';
+
+  mostrarFormulario = false;
+  editando = false;
+
+  modoBusqueda: 'manual' | 'dni' | 'ruc' = 'manual';
+  numeroDocumentoBusqueda = '';
+  cargandoBusqueda = false;
+
+  proveedorActual: Proveedor = this.getEmptyProveedor();
+
+  constructor(private proveedoresService: ProveedoresService) {}
+
+  ngOnInit() {
+    this.cargarProveedores();
+  }
+
+  getEmptyProveedor(): Proveedor {
+    return {
+      nombre: '',
+      contacto: '',
+      telefono: '',
+      direccion: '',
+
+      // Campos nuevos en snake_case
+      tipo_documento: '',
+      numero_documento: '',
+      correo: '',
+      activo: true
+    };
+  }
+
+  async cargarProveedores() {
+    this.loading = true;
+
+    try {
+      this.proveedores = await this.proveedoresService.getProveedores();
+
+      // Normalizar campos (si vienen null)
+      this.proveedores = this.proveedores.map(p => ({
+        ...p,
+        activo: p.activo ?? true,
+        tipo_documento: p.tipo_documento ?? '',
+        numero_documento: p.numero_documento ?? '',
+        correo: p.correo ?? ''
+      }));
+
+      this.filtrarProveedores();
+
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  filtrarProveedores() {
+    const t = this.terminoBusqueda.trim().toLowerCase();
+
+    if (!t) {
+      this.proveedoresFiltrados = this.proveedores;
+      return;
+    }
+
+    this.proveedoresFiltrados = this.proveedores.filter(p =>
+      (p.nombre || '').toLowerCase().includes(t) ||
+      (p.contacto || '').toLowerCase().includes(t) ||
+      (p.telefono || '').toLowerCase().includes(t) ||
+      (p.direccion || '').toLowerCase().includes(t) ||
+      (p.tipo_documento || '').toLowerCase().includes(t) ||
+      (p.numero_documento || '').toLowerCase().includes(t) ||
+      (p.correo || '').toLowerCase().includes(t)
+    );
+  }
+
+  nuevo() {
+    this.editando = false;
+    this.mostrarFormulario = true;
+    this.modoBusqueda = 'manual';
+    this.numeroDocumentoBusqueda = '';
+    this.proveedorActual = this.getEmptyProveedor();
+  }
+
+  editar(p: Proveedor) {
+    this.editando = true;
+    this.mostrarFormulario = true;
+    this.modoBusqueda = 'manual';
+    this.numeroDocumentoBusqueda = '';
+    this.proveedorActual = { ...p };
+  }
+
+  cerrarModal(event: MouseEvent) {
+    if ((event.target as HTMLElement).classList.contains('fixed')) {
+      this.cerrarModalDirecto();
+    }
+  }
+
+  cerrarModalDirecto() {
+    this.mostrarFormulario = false;
+    this.editando = false;
+    this.modoBusqueda = 'manual';
+    this.numeroDocumentoBusqueda = '';
+    this.proveedorActual = this.getEmptyProveedor();
+  }
+
+  async buscarDocumento() {
+    const doc = this.numeroDocumentoBusqueda.trim();
+
+    if (this.modoBusqueda === 'dni' && doc.length !== 8) {
+      alert('El DNI debe tener 8 dígitos.');
+      return;
+    }
+    if (this.modoBusqueda === 'ruc' && doc.length !== 11) {
+      alert('El RUC debe tener 11 dígitos.');
+      return;
+    }
+
+    this.cargandoBusqueda = true;
+    try {
+      this.proveedorActual.tipo_documento = this.modoBusqueda.toUpperCase();
+      this.proveedorActual.numero_documento = doc;
+    } finally {
+      this.cargandoBusqueda = false;
+    }
+  }
+
+  async guardar() {
+    try {
+      if (!this.proveedorActual.nombre?.trim()) {
+        alert('El nombre es obligatorio.');
+        return;
+      }
+      if (!this.proveedorActual.tipo_documento?.trim()) {
+        alert('El tipo de documento es obligatorio.');
+        return;
+      }
+      if (!this.proveedorActual.numero_documento?.trim()) {
+        alert('El número de documento es obligatorio.');
+        return;
+      }
+
+      if (this.editando && this.proveedorActual.id_proveedor) {
+        await this.proveedoresService.updateProveedor(
+          this.proveedorActual.id_proveedor,
+          this.proveedorActual
+        );
+        alert('Proveedor actualizado');
+      } else {
+        await this.proveedoresService.addProveedor(this.proveedorActual);
+        alert('Proveedor registrado');
+      }
+
+      this.cerrarModalDirecto();
+      await this.cargarProveedores();
+
+    } catch (err) {
+      console.error(err);
+      alert('Error al guardar');
+    }
+  }
+
+  async eliminar(p: Proveedor) {
+    if (!p.id_proveedor) return;
+    if (!confirm('¿Eliminar proveedor?')) return;
+
+    try {
+      await this.proveedoresService.deleteProveedor(p.id_proveedor);
+      await this.cargarProveedores();
+
+    } catch (err) {
+      console.error(err);
+      alert('Error al eliminar');
+    }
+  }
+
+  async cambiarEstado(p: Proveedor, value: boolean) {
+    if (!p.id_proveedor) return;
+
+    const prev = p.activo;
+    p.activo = value;
+
+    try {
+      await this.proveedoresService.updateProveedor(p.id_proveedor, { activo: value });
+    } catch (e) {
+      console.error(e);
+      p.activo = prev;
+      alert('No se pudo cambiar el estado.');
+    }
   }
 }

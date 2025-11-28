@@ -1,3 +1,4 @@
+<!--
 <div class="w-full max-w-[1200px] mx-auto flex flex-col px-2 md:px-3 pb-4">
   
   <div class="px-0 pt-1 pb-3 border-b border-gray-200">
@@ -479,4 +480,312 @@
     </form>
   </div>
 </div>
-s
+s-->
+
+<div class="w-full max-w-[1200px] mx-auto flex flex-col px-2 md:px-3 pb-4">
+  
+  <div class="px-0 pt-1 pb-3 border-b border-gray-200">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div>
+        <h2 class="text-xl md:text-2xl font-bold text-gray-900">
+          <span class="inline-flex items-center gap-3">
+            <span class="p-2 rounded-xl bg-blue-50 border border-blue-100">
+              <svg class="w-5 h-5 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+              </svg>
+            </span>
+            Gestión de Proveedores
+          </span>
+        </h2>
+        <p class="mt-1 text-xs md:text-sm text-gray-600">
+          Administra y organiza tus proveedores e historial de compras.
+        </p>
+      </div>
+
+      <nav class="mt-2 md:mt-0" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2 text-sm">
+          <li>
+            <a routerLink="/dashboard" class="flex items-center text-blue-700 hover:text-blue-800 transition-colors">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3"/>
+              </svg>
+              Dashboard
+            </a>
+          </li>
+          <li class="flex items-center">
+            <span class="text-gray-400 mx-1">/</span>
+            <span class="text-gray-500">Proveedores</span>
+          </li>
+          <li class="flex items-center">
+            <span class="text-gray-400 mx-1">/</span>
+            <span class="font-medium text-gray-800">Listado</span>
+          </li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl border border-gray-200 shadow-sm mt-3 p-2 md:p-4">
+    
+    <div class="flex items-center justify-between py-2 mb-3 border-b border-gray-200">
+      <div class="flex items-center text-gray-700 text-xs font-semibold ml-1 gap-2 uppercase tracking-wide">
+        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+        </svg>
+        <span>REGISTROS</span>
+      </div>
+
+      <div class="flex items-center gap-2" *ngIf="!editando && !mostrarFormulario">
+        <button
+          type="button"
+          (click)="nuevo()"
+          class="flex items-center justify-center p-2 text-xs font-semibold uppercase bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          Nuevo proveedor
+        </button>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between gap-3 mb-3">
+      <label class="flex items-center gap-2 text-sm text-gray-800 font-medium">
+        Search:
+        <input
+          type="search"
+          [(ngModel)]="terminoBusqueda"
+          class="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+        />
+      </label>
+    </div>
+
+    <div class="w-full overflow-x-auto pb-2">
+      <table class="w-full whitespace-nowrap min-w-[1100px]" *ngIf="proveedoresFiltrados.length; else sinDatos">
+        <thead>
+          <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
+            <th class="px-4 py-3">Proveedor</th>
+            <th class="px-4 py-3">Documento</th>
+            <th class="px-4 py-3">Teléfono</th>
+            <th class="px-4 py-3">Email</th>
+            <th class="px-4 py-3">Dirección</th>
+            <th class="px-4 py-3">Estado</th>
+            <th class="px-4 py-3 text-right"></th>
+          </tr>
+        </thead>
+
+        <tbody class="bg-white divide-y divide-gray-100">
+          <tr *ngFor="let p of proveedoresFiltrados" class="text-gray-700 hover:bg-gray-50">
+            
+            <td class="px-4 py-2 font-semibold text-xs">
+              <div class="text-gray-900 text-sm font-semibold">{{ p.nombre }}</div>
+              <div class="text-xs text-gray-500 mt-0.5" *ngIf="p.contacto">{{ p.contacto }}</div>
+            </td>
+
+            <td class="px-4 py-2">
+              <strong class="block text-gray-600 text-xs">{{ p.tipo_documento || '-' }}</strong>
+              <span class="font-semibold text-xs text-gray-900">{{ p.numero_documento || '-' }}</span>
+            </td>
+
+            <td class="px-4 py-2 text-xs font-semibold">{{ p.telefono || '-' }}</td>
+
+            <td class="px-4 py-2 text-xs font-semibold">{{ p.correo || '-' }}</td>
+
+            <td class="px-4 py-2 text-xs max-w-[360px]">
+              <span class="line-clamp-2">{{ p.direccion || '-' }}</span>
+            </td>
+
+            <td class="px-4 py-2">
+              <div class="flex items-center gap-3">
+                <span class="inline-flex items-center justify-center">
+                  <svg *ngIf="p.activo" class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <svg *ngIf="!p.activo" class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </span>
+
+                <label class="inline-flex relative items-center cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    class="sr-only peer"
+                    [(ngModel)]="p.activo"
+                    (ngModelChange)="cambiarEstado(p, $event)"
+                  />
+                  <span class="w-9 h-5 bg-gray-200 rounded-full peer-checked:bg-blue-600 relative"></span>
+                </label>
+              </div>
+            </td>
+
+            <td class="px-4 py-1">
+              <div class="flex items-center justify-end gap-2">
+                <button
+                  class="p-2 text-blue-600 rounded-lg hover:bg-blue-50 border border-gray-200"
+                  type="button"
+                  (click)="editar(p)"
+                >
+                  Editar
+                </button>
+
+                <button
+                  class="p-2 text-red-600 rounded-lg hover:bg-red-50 border border-gray-200"
+                  type="button"
+                  (click)="eliminar(p)"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
+
+      <ng-template #sinDatos>
+        <div class="py-12 px-6 text-center text-gray-600">
+          <h3 class="font-semibold text-gray-900">No hay proveedores registrados</h3>
+          <p class="text-gray-600">Crea uno con el botón <b>Nuevo proveedor</b>.</p>
+          <button
+            type="button"
+            (click)="nuevo()"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-blue-700 transition-all"
+          >
+            Nuevo proveedor
+          </button>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL -->
+<div
+  class="fixed inset-0 z-[2000] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+  *ngIf="mostrarFormulario || editando"
+  (click)="cerrarModal($event)"
+>
+  <div
+    (click)="$event.stopPropagation()"
+    class="w-full max-w-xl bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden"
+  >
+    
+    <div class="flex items-center justify-between p-4 md:p-5 border-b border-gray-200">
+      <h3 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+        {{ editando ? 'Editar Proveedor' : 'Nuevo Proveedor' }}
+      </h3>
+
+      <button
+        type="button"
+        class="text-gray-500 hover:bg-gray-100 rounded-lg w-9 h-9 inline-flex items-center justify-center"
+        (click)="cerrarModalDirecto()"
+      >
+        ✖
+      </button>
+    </div>
+
+    <form (ngSubmit)="guardar()" class="p-4 md:p-5 space-y-4">
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+
+        <div>
+          <label class="block mb-2 text-sm font-medium text-gray-900">
+            Tipo de documento <span class="text-red-500">*</span>
+          </label>
+          <select
+            [(ngModel)]="proveedorActual.tipo_documento"
+            name="tipo_documento"
+            required
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+          >
+            <option value="" disabled>Seleccione…</option>
+            <option value="DNI">DNI</option>
+            <option value="RUC">RUC</option>
+            <option value="OTRO">OTRO</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block mb-2 text-sm font-medium text-gray-900">
+            Número de documento <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            [(ngModel)]="proveedorActual.numero_documento"
+            name="numero_documento"
+            required
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+          />
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block mb-2 text-sm font-medium text-gray-900">
+            Nombre / Razón social <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            [(ngModel)]="proveedorActual.nombre"
+            name="nombre"
+            required
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+          />
+        </div>
+
+        <div>
+          <label class="block mb-2 text-sm font-medium text-gray-900">Teléfono</label>
+          <input
+            type="text"
+            [(ngModel)]="proveedorActual.telefono"
+            name="telefono"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+          />
+        </div>
+
+        <div>
+          <label class="block mb-2 text-sm font-medium text-gray-900">Correo electrónico</label>
+          <input
+            type="email"
+            [(ngModel)]="proveedorActual.correo"
+            name="correo"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+          />
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block mb-2 text-sm font-medium text-gray-900">Dirección</label>
+          <textarea
+            rows="2"
+            [(ngModel)]="proveedorActual.direccion"
+            name="direccion"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+          ></textarea>
+        </div>
+
+      </div>
+
+      <div class="flex justify-center pt-4 border-t border-gray-200">
+        <button
+          type="button"
+          (click)="cerrarModalDirecto()"
+          class="px-5 py-2.5 bg-white border border-gray-300 rounded-lg text-sm"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          class="ml-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm"
+        >
+          Guardar proveedor
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
