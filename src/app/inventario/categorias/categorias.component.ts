@@ -17,6 +17,7 @@ export class CategoriasComponent implements OnInit {
 
   // Formulario
   modoEdicion = false;
+  mostrarFormulario = false;
   categoria: Categoria = this.getEmptyCategoria();
 
   constructor(private categoriasService: CategoriasService) {}
@@ -46,6 +47,7 @@ export class CategoriasComponent implements OnInit {
   // ============================
   nuevaCategoria() {
     this.modoEdicion = false;
+    this.mostrarFormulario = true;
     this.categoria = this.getEmptyCategoria();
   }
 
@@ -54,7 +56,24 @@ export class CategoriasComponent implements OnInit {
   // ============================
   editarCategoria(cat: Categoria) {
     this.modoEdicion = true;
+    this.mostrarFormulario = true;
     this.categoria = { ...cat };
+  }
+
+  // ============================
+  // CERRAR MODAL
+  // ============================
+  cerrarModalDirecto() {
+    this.mostrarFormulario = false;
+    this.modoEdicion = false;
+    this.categoria = this.getEmptyCategoria();
+  }
+
+  cerrarModal(event: MouseEvent) {
+    // Si se hizo clic en el backdrop (fondo), cerrar el modal
+    if ((event.target as HTMLElement)?.classList?.contains('fixed')) {
+      this.cerrarModalDirecto();
+    }
   }
 
   // ============================
@@ -73,8 +92,7 @@ export class CategoriasComponent implements OnInit {
         alert('Categoría creada');
       }
 
-      this.categoria = this.getEmptyCategoria();
-      this.modoEdicion = false;
+      this.cerrarModalDirecto();
       this.cargarCategorias();
 
     } catch (err) {

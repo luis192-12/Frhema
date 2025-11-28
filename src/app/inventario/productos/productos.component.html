@@ -1,127 +1,335 @@
-<h2>Gestión de Productos</h2>
-
-<button (click)="nuevoProducto()">➕ Nuevo Producto</button>
-
-<!-- FORMULARIO -->
-<div style="margin-top:20px; border:1px solid #ccc; padding:1rem;" *ngIf="producto">
-  <h3>{{ modoEdicion ? 'Editar Producto' : 'Nuevo Producto' }}</h3>
-
-  <form (ngSubmit)="guardarProducto()">
-
-    <!-- CODIGO -->
-    <label>Código:</label>
-    <input type="text" [(ngModel)]="producto.codigo" name="codigo" required />
-
-    <!-- NOMBRE -->
-    <label>Nombre:</label>
-    <input type="text" [(ngModel)]="producto.nombre" name="nombre" required />
-
-    <!-- DESCRIPCIÓN -->
-    <label>Descripción:</label>
-    <input type="text" [(ngModel)]="producto.descripcion" name="descripcion" />
-
-    <!-- CATEGORIA -->
-    <label>Categoría:</label>
-    <select [(ngModel)]="producto.id_categoria" name="id_categoria">
-      <option [ngValue]="null">-- Seleccione --</option>
-      <option *ngFor="let c of categorias" [ngValue]="c.id_categoria">
-        {{ c.nombre }}
-      </option>
-    </select>
-
-    <!-- PROVEEDOR -->
-    <label>Proveedor:</label>
-    <select [(ngModel)]="producto.id_proveedor" name="id_proveedor">
-      <option [ngValue]="null">-- Seleccione --</option>
-      <option *ngFor="let p of proveedores" [ngValue]="p.id_proveedor">
-        {{ p.nombre }}
-      </option>
-    </select>
-
-    <!-- UNIDAD -->
-    <label>Unidad de medida:</label>
-    <input type="text" [(ngModel)]="producto.unidad_medida" name="unidad_medida" />
-
-    <!-- STOCK -->
-    <label>Stock actual:</label>
-    <input type="number" [(ngModel)]="producto.stock_actual" name="stock_actual" />
-
-    <label>Stock mínimo:</label>
-    <input type="number" [(ngModel)]="producto.stock_minimo" name="stock_minimo" />
-
-    <!-- PRECIOS -->
-    <label>Precio unitario:</label>
-    <input type="number" step="0.01" [(ngModel)]="producto.precio_unitario" name="precio_unitario" />
-
-    <label>Precio por mayor:</label>
-    <input type="number" step="0.01" [(ngModel)]="producto.precio_mayor" name="precio_mayor" />
-
-    <!-- CADUCIDAD -->
-    <label>
-      <input type="checkbox" [(ngModel)]="producto.tiene_caducidad" name="tiene_caducidad" />
-      ¿Tiene caducidad?
-    </label>
-
-    <div *ngIf="producto.tiene_caducidad">
-      <label>Fecha de vencimiento:</label>
-      <input type="date" [(ngModel)]="producto.fecha_vencimiento" name="fecha_vencimiento" />
+<div class="w-full max-w-[1200px] mx-auto flex flex-col px-2 md:px-3 pb-2">
+  
+  <header class="flex items-start justify-between gap-4 px-0 py-3 pb-2 bg-transparent border-none shadow-none">
+    <div class="flex-1">
+      <div class="flex items-center gap-3">
+        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+        </svg>
+        <div>
+          <h1 class="m-0 text-2xl font-semibold text-gray-900 tracking-wide">Gestión de Productos</h1>
+          <p class="mt-1 mb-0 text-sm text-gray-600">Administra y organiza tu inventario de productos.</p>
+        </div>
+      </div>
     </div>
+  </header>
 
-    <!-- GARANTÍA -->
-    <label>
-      <input type="checkbox" [(ngModel)]="producto.tiene_garantia" name="tiene_garantia" />
-      ¿Tiene garantía?
-    </label>
-
-    <div *ngIf="producto.tiene_garantia">
-      <label>Meses garantía:</label>
-      <input type="number" [(ngModel)]="producto.meses_garantia" name="meses_garantia" />
+  
+  <div class="flex items-center justify-between px-0 py-1.5 mb-1.5 border-b border-gray-200">
+    <div class="flex items-center text-gray-900 text-xs font-semibold uppercase gap-2">
+      <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+      </svg>
+      <span>REGISTROS</span>
     </div>
+    <div class="flex items-center gap-2" *ngIf="!modoEdicion && !mostrarFormulario">
+      <button
+        type="button"
+        (click)="nuevoProducto()"
+        class="flex items-center justify-center gap-2 px-2 py-2 text-xs font-semibold bg-blue-600 text-white border-none rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg transition-all uppercase cursor-pointer"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        <span>NUEVO PRODUCTO</span>
+      </button>
+    </div>
+  </div>
 
-    <button type="submit">{{ modoEdicion ? 'Actualizar' : 'Crear' }}</button>
+  
+  <div class="px-0 pb-2">
+    <label class="flex items-center gap-2 text-sm text-gray-900 font-medium">
+      Search:
+      <input
+        type="search"
+        [(ngModel)]="terminoBusqueda"
+        (ngModelChange)="filtrarProductos()"
+        placeholder=""
+        class="px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-900 bg-white outline-none transition-all focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+      />
+    </label>
+  </div>
 
-  </form>
+  
+  <section class="rounded-none border-none bg-transparent overflow-auto shadow-none px-0 pb-2">
+    <div *ngIf="loading" class="p-6 text-center text-gray-500">Cargando productos...</div>
+    <table class="w-full border-collapse min-w-[960px]" *ngIf="!loading && productosFiltrados.length; else sinDatos">
+      <thead>
+        <tr>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Código</th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Nombre</th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Categoría</th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Proveedor</th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Stock</th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Precio</th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of productosFiltrados" class="hover:bg-blue-50 transition-colors">
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-900 text-sm font-semibold">{{ p.codigo }}</td>
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-900 text-sm">{{ p.nombre }}</td>
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-600 text-sm">{{ getCategoriaNombre(p.id_categoria ?? null) }}</td>
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-600 text-sm">{{ getProveedorNombre(p.id_proveedor ?? null) }}</td>
+          <td class="py-4 px-4 border-b border-gray-100 align-middle">
+            <span [class]="p.stock_actual <= p.stock_minimo ? 'text-red-600 font-semibold' : 'text-gray-900 text-sm'">
+              {{ p.stock_actual }}
+            </span>
+          </td>
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-900 text-sm font-semibold">S/. {{ p.precio_unitario }}</td>
+          <td class="py-4 px-4 border-b border-gray-100 align-middle">
+            <div class="flex gap-2.5 justify-end">
+              <button 
+                (click)="editarProducto(p)"
+                class="border border-gray-300 bg-white text-gray-900 rounded-lg px-3.5 py-2 cursor-pointer inline-flex items-center gap-2 transition-all hover:-translate-y-0.5 hover:bg-gray-50 hover:border-gray-400 hover:shadow text-xs font-medium whitespace-nowrap"
+                title="Editar"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                <span>Editar</span>
+              </button>
+              <button 
+                (click)="eliminarProducto(p.id_producto!)"
+                class="border border-red-300 bg-red-50 text-red-700 rounded-lg px-3.5 py-2 cursor-pointer inline-flex items-center gap-2 transition-all hover:-translate-y-0.5 hover:bg-red-100 hover:border-red-400 hover:shadow text-xs font-medium whitespace-nowrap"
+                title="Eliminar"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+                <span>Eliminar</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #sinDatos>
+      <div class="py-12 px-6 text-center text-gray-600">
+        <svg class="w-12 h-12 mx-auto mb-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+        </svg>
+        <h3 class="m-0 mb-2 text-gray-900 font-semibold">No hay productos registrados</h3>
+        <p class="m-0 mb-6 text-gray-600">Crea uno con el botón <b>Nuevo Producto</b>.</p>
+        <button 
+          type="button" 
+          (click)="nuevoProducto()" 
+          *ngIf="!modoEdicion"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-lg cursor-pointer font-medium text-sm transition-all hover:-translate-y-0.5 hover:bg-blue-700 hover:border-blue-700 hover:shadow-md"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          <span>Nuevo Producto</span>
+        </button>
+      </div>
+    </ng-template>
+  </section>
 </div>
 
-<hr />
 
-<!-- TABLA -->
-<table border="1" width="100%" style="margin-top:20px">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Código</th>
-      <th>Nombre</th>
-      <th>Categoría</th>
-      <th>Proveedor</th>
-      <th>Stock</th>
-      <th>Precio</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
+<div 
+  *ngIf="mostrarFormulario || modoEdicion" 
+  (click)="mostrarFormulario = false; modoEdicion = false; producto = getEmptyProducto()"
+  class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-[2000]"
+>
+  <div 
+    (click)="$event.stopPropagation()"
+    class="w-full max-w-[800px] rounded-xl overflow-hidden border border-gray-200 bg-white shadow-lg max-h-[85vh] flex flex-col"
+  >
+    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-white flex-shrink-0">
+      <div class="flex items-center gap-3">
+        <svg class="w-4.5 h-4.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        <h3 class="m-0 text-lg font-semibold text-gray-900">{{ modoEdicion ? 'Editar Producto' : 'Nuevo Producto' }}</h3>
+      </div>
+      <button 
+        type="button" 
+        (click)="mostrarFormulario = false; modoEdicion = false; producto = getEmptyProducto()"
+        class="border-none bg-transparent text-gray-600 text-xl cursor-pointer p-2 rounded-md flex items-center justify-center transition-all hover:bg-gray-100 hover:text-gray-900"
+        title="Cerrar"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
 
-  <tbody>
-    <tr *ngFor="let p of productos">
-      <td>{{ p.id_producto }}</td>
-      <td>{{ p.codigo }}</td>
-      <td>{{ p.nombre }}</td>
+    <form (ngSubmit)="guardarProducto()" class="px-5 py-4 bg-white overflow-y-auto flex-1">
+      <div class="grid grid-cols-2 gap-3 mb-3">
+        <div class="mb-0">
+          <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Código <span class="text-red-500">*</span></label>
+          <input
+            type="text"
+            [(ngModel)]="producto.codigo"
+            name="codigo"
+            required
+            class="w-full px-2.5 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-3 focus:ring-blue-100 hover:border-gray-400"
+          />
+        </div>
 
-      <!-- Mostrar nombre real -->
-      <td>{{ getCategoriaNombre(p.id_categoria ?? null) }}</td>
-      <td>{{ getProveedorNombre(p.id_proveedor ?? null) }}</td>
+        <div class="mb-0">
+          <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Nombre <span class="text-red-500">*</span></label>
+          <input
+            type="text"
+            [(ngModel)]="producto.nombre"
+            name="nombre"
+            required
+            class="w-full px-2.5 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-3 focus:ring-blue-100 hover:border-gray-400"
+          />
+        </div>
 
-      <!-- Stock -->
-      <td [style.color]="p.stock_actual <= p.stock_minimo ? 'red' : 'black'">
-        {{ p.stock_actual }}
-      </td>
+        <div class="mb-0 col-span-2">
+          <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Descripción</label>
+          <input
+            type="text"
+            [(ngModel)]="producto.descripcion"
+            name="descripcion"
+            class="w-full px-2.5 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-3 focus:ring-blue-100 hover:border-gray-400"
+          />
+        </div>
 
-      <!-- Precio -->
-      <td>S/. {{ p.precio_unitario }}</td>
+        <div class="mb-0">
+          <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Categoría</label>
+          <select
+            [(ngModel)]="producto.id_categoria"
+            name="id_categoria"
+            class="w-full px-2.5 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-3 focus:ring-blue-100 hover:border-gray-400"
+          >
+            <option [ngValue]="null">-- Seleccione --</option>
+            <option *ngFor="let c of categorias" [ngValue]="c.id_categoria">{{ c.nombre }}</option>
+          </select>
+        </div>
 
-      <td>
-        <button (click)="editarProducto(p)">✏️ Editar</button>
-        <button (click)="eliminarProducto(p.id_producto!)">🗑️ Eliminar</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+        <div class="mb-0">
+          <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Proveedor</label>
+          <select
+            [(ngModel)]="producto.id_proveedor"
+            name="id_proveedor"
+            class="w-full px-2.5 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-3 focus:ring-blue-100 hover:border-gray-400"
+          >
+            <option [ngValue]="null">-- Seleccione --</option>
+            <option *ngFor="let p of proveedores" [ngValue]="p.id_proveedor">{{ p.nombre }}</option>
+          </select>
+        </div>
+
+        <div class="mb-0">
+          <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Unidad de medida</label>
+          <input
+            type="text"
+            [(ngModel)]="producto.unidad_medida"
+            name="unidad_medida"
+            class="w-full px-2.5 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-3 focus:ring-blue-100 hover:border-gray-400"
+          />
+        </div>
+
+        <div class="mb-0">
+          <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Stock actual</label>
+          <input
+            type="number"
+            [(ngModel)]="producto.stock_actual"
+            name="stock_actual"
+            class="w-full px-2.5 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-3 focus:ring-blue-100 hover:border-gray-400"
+          />
+        </div>
+
+        <div class="mb-0">
+          <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Stock mínimo</label>
+          <input
+            type="number"
+            [(ngModel)]="producto.stock_minimo"
+            name="stock_minimo"
+            class="w-full px-2.5 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-3 focus:ring-blue-100 hover:border-gray-400"
+          />
+        </div>
+
+        <div class="mb-0">
+          <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Precio unitario</label>
+          <input
+            type="number"
+            step="0.01"
+            [(ngModel)]="producto.precio_unitario"
+            name="precio_unitario"
+            class="w-full px-2.5 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-3 focus:ring-blue-100 hover:border-gray-400"
+          />
+        </div>
+
+        <div class="mb-0">
+          <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Precio por mayor</label>
+          <input
+            type="number"
+            step="0.01"
+            [(ngModel)]="producto.precio_mayor"
+            name="precio_mayor"
+            class="w-full px-2.5 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-3 focus:ring-blue-100 hover:border-gray-400"
+          />
+        </div>
+
+        <div class="mb-0 col-span-2 flex flex-wrap gap-4">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              [(ngModel)]="producto.tiene_caducidad"
+              name="tiene_caducidad"
+              class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <span class="text-sm text-gray-700">¿Tiene caducidad?</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              [(ngModel)]="producto.tiene_garantia"
+              name="tiene_garantia"
+              class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <span class="text-sm text-gray-700">¿Tiene garantía?</span>
+          </label>
+        </div>
+
+        <div class="mb-0 col-span-2" *ngIf="producto.tiene_caducidad">
+          <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Fecha de vencimiento</label>
+          <input
+            type="date"
+            [(ngModel)]="producto.fecha_vencimiento"
+            name="fecha_vencimiento"
+            class="w-full px-2.5 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-3 focus:ring-blue-100 hover:border-gray-400"
+          />
+        </div>
+
+        <div class="mb-0 col-span-2" *ngIf="producto.tiene_garantia">
+          <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Meses garantía</label>
+          <input
+            type="number"
+            [(ngModel)]="producto.meses_garantia"
+            name="meses_garantia"
+            class="w-full px-2.5 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-3 focus:ring-blue-100 hover:border-gray-400"
+          />
+        </div>
+      </div>
+
+      <div class="flex justify-center gap-2.5 mt-0 pt-4 border-t border-gray-200 bg-white flex-shrink-0">
+        <button 
+          type="button" 
+          (click)="mostrarFormulario = false; modoEdicion = false; producto = getEmptyProducto()"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-900 rounded-lg cursor-pointer font-medium text-sm transition-all hover:-translate-y-0.5 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+          <span>Cancelar</span>
+        </button>
+        <button 
+          type="submit"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-lg cursor-pointer font-medium text-sm transition-all hover:-translate-y-0.5 hover:bg-blue-700 hover:border-blue-700 hover:shadow-md"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <span>{{ modoEdicion ? 'Guardar producto' : 'Guardar producto' }}</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

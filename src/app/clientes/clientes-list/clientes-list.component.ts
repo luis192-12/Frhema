@@ -14,7 +14,10 @@ import { Cliente } from '../../core/models/cliente.model';
 export class ClientesListComponent implements OnInit {
 
   clientes: Cliente[] = [];
+  clientesFiltrados: Cliente[] = [];
   loading = true;
+  terminoBusqueda = '';
+  mostrarFormulario = false;
 
   modoEdicion = false;
   cliente: Cliente = this.getEmptyCliente();
@@ -41,19 +44,49 @@ export class ClientesListComponent implements OnInit {
   async cargarClientes() {
     this.loading = true;
     this.clientes = await this.clientesService.getClientes();
+    this.filtrarClientes();
     this.loading = false;
+  }
+
+  filtrarClientes() {
+    if (!this.terminoBusqueda.trim()) {
+      this.clientesFiltrados = this.clientes;
+    } else {
+      const termino = this.terminoBusqueda.toLowerCase();
+      this.clientesFiltrados = this.clientes.filter(c =>
+        c.nombre?.toLowerCase().includes(termino) ||
+        c.documento?.toLowerCase().includes(termino) ||
+        c.telefono?.toLowerCase().includes(termino) ||
+        c.direccion?.toLowerCase().includes(termino)
+      );
+    }
   }
 
   // NUEVO
   nuevoCliente() {
     this.modoEdicion = false;
+    this.mostrarFormulario = true;
     this.cliente = this.getEmptyCliente();
   }
 
   // EDITAR
   editarCliente(c: Cliente) {
     this.modoEdicion = true;
+    this.mostrarFormulario = true;
     this.cliente = { ...c };
+  }
+
+  // CERRAR MODAL
+  cerrarModalDirecto() {
+    this.mostrarFormulario = false;
+    this.modoEdicion = false;
+    this.cliente = this.getEmptyCliente();
+  }
+
+  cerrarModal(event: MouseEvent) {
+    if ((event.target as HTMLElement)?.classList?.contains('fixed')) {
+      this.cerrarModalDirecto();
+    }
   }
 
   // GUARDAR
@@ -67,8 +100,7 @@ export class ClientesListComponent implements OnInit {
         alert('Cliente registrado');
       }
 
-      this.cliente = this.getEmptyCliente();
-      this.modoEdicion = false;
+      this.cerrarModalDirecto();
       this.cargarClientes();
 
     } catch (err) {

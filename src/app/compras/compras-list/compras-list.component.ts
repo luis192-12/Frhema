@@ -91,6 +91,24 @@ export class ComprasListComponent implements OnInit {
   }
 
   // ============================
+  // LIMPIAR FORMULARIO
+  // ============================
+  limpiarFormulario() {
+    this.compra = {
+      id_proveedor: 0,
+      id_usuario: this.compra.id_usuario,
+      nro_documento: '',
+      total: 0
+    };
+    this.detalles = [];
+    this.nuevoDetalle = {
+      id_producto: 0,
+      cantidad: 1,
+      costo_unitario: 0
+    };
+  }
+
+  // ============================
   // GUARDAR COMPRA
   // ============================
   async guardarCompra() {
@@ -108,14 +126,7 @@ export class ComprasListComponent implements OnInit {
       const id_compra = await this.comprasService.registrarCompra(this.compra, this.detalles);
       alert('Compra registrada #' + id_compra);
 
-      this.compra = {
-        id_proveedor: 0,
-        id_usuario: this.compra.id_usuario,
-        nro_documento: '',
-        total: 0
-      };
-      this.detalles = [];
-
+      this.limpiarFormulario();
       this.cargarCompras();
 
     } catch (err) {

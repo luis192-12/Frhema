@@ -12,11 +12,37 @@ import { Proveedor } from '../../core/models/proveedor.model';
 })
 export class ProveedoresComponent implements OnInit {
 
+  /**
+   * ✅ NUEVO (para Supabase / BD):
+   * Vamos a agregar estos campos a la tabla `proveedores` para conectar todo lo nuevo del UI:
+   * - tipo_documento (text)      -> proveedor.tipoDocumento
+   * - numero_documento (text)    -> proveedor.numeroDocumento
+   * - correo (text)              -> proveedor.correo
+   * - activo (bool) default true -> proveedor.activo (estado ON/OFF de la tabla)
+   *
+   * (Opcional si quieres búsqueda DNI/RUC real)
+   * - fuente_consulta (text) -> 'manual' | 'dni' | 'ruc' (solo si deseas auditar cómo se creó)
+   */
+
   proveedores: Proveedor[] = [];
+  proveedoresFiltrados: Proveedor[] = [];
   loading = true;
 
-  modoEdicion = false;
-  proveedor: Proveedor = this.getEmptyProveedor();
+  terminoBusqueda = '';
+
+  // Modal
+  mostrarFormulario = false;
+  editando = false;
+
+  // Tabs: manual / dni / ruc
+  modoBusqueda: 'manual' | 'dni' | 'ruc' = 'manual';
+
+  // DNI/RUC search
+  numeroDocumentoBusqueda = '';
+  cargandoBusqueda = false;
+
+  // Form actual (para crear/editar)
+  proveedorActual: Proveedor = this.getEmptyProveedor();
 
   constructor(private proveedoresService: ProveedoresService) {}
 
@@ -24,12 +50,21 @@ export class ProveedoresComponent implements OnInit {
     this.cargarProveedores();
   }
 
+  // 🔧 modelo vacío con CAMPOS NUEVOS
   getEmptyProveedor(): Proveedor {
     return {
+      id_proveedor: undefined,
+
       nombre: '',
       contacto: '',
       telefono: '',
-      direccion: ''
+      direccion: '',
+
+      // ✅ Nuevos:
+      tipoDocumento: '',
+      numeroDocumento: '',
+      correo: '',
+      activo: true,
     };
   }
 
@@ -38,39 +73,159 @@ export class ProveedoresComponent implements OnInit {
   // ============================
   async cargarProveedores() {
     this.loading = true;
-    this.proveedores = await this.proveedoresService.getProveedores();
-    this.loading = false;
-  }
-
-  // NUEVO
-  nuevoProveedor() {
-    this.modoEdicion = false;
-    this.proveedor = this.getEmptyProveedor();
-  }
-
-  // EDITAR
-  editarProveedor(p: Proveedor) {
-    this.modoEdicion = true;
-    this.proveedor = { ...p };
-  }
-
-  // GUARDAR
-  async guardarProveedor() {
     try {
-      if (this.modoEdicion && this.proveedor.id_proveedor) {
+      this.proveedores = await this.proveedoresService.getProveedores();
+
+      // Por si la BD trae null, lo normalizamos para UI
+      this.proveedores = (this.proveedores || []).map(p => ({
+        ...p,
+        activo: (p as any).activo ?? true,
+        tipoDocumento: (p as any).tipoDocumento ?? '',
+        numeroDocumento: (p as any).numeroDocumento ?? '',
+        correo: (p as any).correo ?? ''
+      }));
+
+      this.filtrarProveedores();
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  filtrarProveedores() {
+    const t = this.terminoBusqueda.trim().toLowerCase();
+
+    if (!t) {
+      this.proveedoresFiltrados = this.proveedores;
+      return;
+    }
+
+    this.proveedoresFiltrados = this.proveedores.filter(p => {
+      const nombre = (p.nombre || '').toLowerCase();
+      const contacto = (p.contacto || '').toLowerCase();
+      const telefono = (p.telefono || '').toLowerCase();
+      const direccion = (p.direccion || '').toLowerCase();
+
+      // ✅ Nuevos:
+      const tipoDoc = ((p as any).tipoDocumento || '').toLowerCase();
+      const numDoc = ((p as any).numeroDocumento || '').toLowerCase();
+      const correo = ((p as any).correo || '').toLowerCase();
+
+      return (
+        nombre.includes(t) ||
+        contacto.includes(t) ||
+        telefono.includes(t) ||
+        direccion.includes(t) ||
+        tipoDoc.includes(t) ||
+        numDoc.includes(t) ||
+        correo.includes(t)
+      );
+    });
+  }
+
+  // ============================
+  // UI: ABRIR/CERRAR MODAL
+  // ============================
+  nuevo() {
+    // abre modal en modo crear
+    this.editando = false;
+    this.mostrarFormulario = true;
+    this.modoBusqueda = 'manual';
+    this.numeroDocumentoBusqueda = '';
+    this.proveedorActual = this.getEmptyProveedor();
+  }
+
+  editar(p: Proveedor) {
+    this.editando = true;
+    this.mostrarFormulario = true;
+    this.modoBusqueda = 'manual';
+    this.numeroDocumentoBusqueda = '';
+    // Guardamos una copia del proveedor original para poder restaurar si se cancela
+    this.proveedorActual = { ...p };
+  }
+
+  cerrarModal(event: MouseEvent) {
+    // si tocó fuera del modal (backdrop), cierra
+    if ((event.target as HTMLElement)?.classList?.contains('fixed')) {
+      this.cerrarModalDirecto();
+    }
+  }
+
+  cerrarModalDirecto() {
+    // Cierra el modal sin guardar cambios
+    this.mostrarFormulario = false;
+    this.editando = false;
+    this.modoBusqueda = 'manual';
+    this.numeroDocumentoBusqueda = '';
+    this.proveedorActual = this.getEmptyProveedor();
+  }
+
+  // ============================
+  // BUSCAR DNI / RUC (UI)
+  // ============================
+  async buscarDocumento() {
+    const doc = (this.numeroDocumentoBusqueda || '').trim();
+
+    // validación rápida
+    if (this.modoBusqueda === 'dni' && doc.length !== 8) {
+      alert('El DNI debe tener 8 dígitos.');
+      return;
+    }
+    if (this.modoBusqueda === 'ruc' && doc.length !== 11) {
+      alert('El RUC debe tener 11 dígitos.');
+      return;
+    }
+
+    this.cargandoBusqueda = true;
+    try {
+      // ✅ Aquí lo conectaremos luego (RENIEC/SUNAT o tu API intermedia)
+      // Por ahora solo auto-llenamos el tipo/numero para que el flujo funcione.
+      this.proveedorActual.tipoDocumento = this.modoBusqueda.toUpperCase() as any; // DNI/RUC
+      this.proveedorActual.numeroDocumento = doc;
+
+      // Placeholder: si quieres, luego rellenamos proveedorActual.nombre/direccion etc.
+      // this.proveedorActual.nombre = resultado.nombre;
+      // this.proveedorActual.direccion = resultado.direccion;
+
+    } catch (e) {
+      console.error(e);
+      alert('No se pudo buscar el documento.');
+    } finally {
+      this.cargandoBusqueda = false;
+    }
+  }
+
+  // ============================
+  // GUARDAR
+  // ============================
+  async guardar() {
+    try {
+      // validaciones mínimas
+      if (!this.proveedorActual.nombre?.trim()) {
+        alert('El nombre es obligatorio.');
+        return;
+      }
+      if (!this.proveedorActual.tipoDocumento?.trim()) {
+        alert('El tipo de documento es obligatorio.');
+        return;
+      }
+      if (!this.proveedorActual.numeroDocumento?.trim()) {
+        alert('El número de documento es obligatorio.');
+        return;
+      }
+
+      if (this.editando && this.proveedorActual.id_proveedor) {
         await this.proveedoresService.updateProveedor(
-          this.proveedor.id_proveedor,
-          this.proveedor
+          this.proveedorActual.id_proveedor,
+          this.proveedorActual
         );
         alert('Proveedor actualizado');
       } else {
-        await this.proveedoresService.addProveedor(this.proveedor);
+        await this.proveedoresService.addProveedor(this.proveedorActual);
         alert('Proveedor registrado');
       }
 
-      this.proveedor = this.getEmptyProveedor();
-      this.modoEdicion = false;
-      this.cargarProveedores();
+      this.cerrarModalDirecto();
+      await this.cargarProveedores();
 
     } catch (err) {
       console.error(err);
@@ -78,15 +233,48 @@ export class ProveedoresComponent implements OnInit {
     }
   }
 
+  // ============================
   // ELIMINAR
-  async eliminarProveedor(id: number) {
+  // ============================
+  async eliminar(p: Proveedor) {
+    const id = p.id_proveedor;
+    if (!id) return;
+
     if (!confirm('¿Eliminar proveedor?')) return;
 
     try {
       await this.proveedoresService.deleteProveedor(id);
-      this.cargarProveedores();
+      await this.cargarProveedores();
     } catch (err) {
+      console.error(err);
       alert('Error al eliminar');
     }
+  }
+
+  // ============================
+  // ESTADO ACTIVO (switch)
+  // ============================
+  async cambiarEstado(p: Proveedor, value: boolean) {
+    const id = p.id_proveedor;
+    if (!id) return;
+
+    // update optimista en UI
+    const prev = (p as any).activo;
+    (p as any).activo = value;
+
+    try {
+      // ✅ se requiere campo `activo` en Supabase
+      await this.proveedoresService.updateProveedor(id, { ...(p as any), activo: value });
+    } catch (e) {
+      console.error(e);
+      (p as any).activo = prev; // rollback
+      alert('No se pudo cambiar el estado.');
+    }
+  }
+
+  // (si tu UI aún llama este método)
+  exportarExcel() {
+    // lo dejas como lo tengas en tu proyecto
+    console.log('Exportar Excel (pendiente o existente)');
   }
 }

@@ -1,94 +1,294 @@
-<h2>Registro de Compras</h2>
+<div class="w-full max-w-[1200px] mx-auto flex flex-col px-2 md:px-3 pb-2">
+  
+  <header class="flex items-start justify-between gap-4 px-0 pt-0 pb-2 bg-transparent border-none shadow-none">
+    <div class="flex-1">
+      <div class="flex items-center gap-3">
+        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M7 7h10M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
+        </svg>
+        <div>
+          <h1 class="m-0 text-2xl font-semibold text-gray-900 tracking-wide">Registro de Compras</h1>
+          <p class="mt-1 mb-0 text-sm text-gray-600">Registra compras, agrega detalle y revisa el historial.</p>
+        </div>
+      </div>
+    </div>
+  </header>
 
-<!-- CABECERA DE COMPRA -->
-<div style="border:1px solid #ccc; padding:1rem; margin-bottom: 20px;">
-  <h3>Nueva Compra</h3>
+  
+  <div class="flex items-center justify-between px-0 py-1.5 mb-2 border-b border-gray-200">
+    <div class="flex items-center text-gray-900 text-xs font-semibold uppercase gap-2">
+      <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+      </svg>
+      <span>NUEVA COMPRA</span>
+    </div>
 
-  <label>Proveedor:</label>
-  <select [(ngModel)]="compra.id_proveedor" name="id_proveedor">
-    <option value="0">Seleccione proveedor</option>
-    <option *ngFor="let p of proveedores" [value]="p.id_proveedor">
-      {{ p.nombre }}
-    </option>
-  </select>
-
-  <label>N° Documento:</label>
-  <input type="text" [(ngModel)]="compra.nro_documento" />
-
-</div>
-
-<!-- DETALLES -->
-<h3>Detalle de Compra</h3>
-
-<div style="border:1px solid #ccc; padding:1rem;">
-
-  <div style="display:flex; gap:1rem">
-    <select [(ngModel)]="nuevoDetalle.id_producto">
-      <option value="0">Producto</option>
-      <option *ngFor="let p of productos" [value]="p.id_producto">
-        {{ p.nombre }}
-      </option>
-    </select>
-
-    <input type="number" [(ngModel)]="nuevoDetalle.cantidad" min="1" />
-    <input type="number" [(ngModel)]="nuevoDetalle.costo_unitario" min="0" step="0.01" />
-
-    <button (click)="agregarDetalle()">Agregar</button>
+    <div class="flex items-center gap-2">
+      <button
+        type="button"
+        (click)="limpiarFormulario()"
+        class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-900 rounded-lg cursor-pointer font-medium text-sm transition-all hover:-translate-y-0.5 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md"
+        title="Limpiar formulario"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+        <span>Limpiar</span>
+      </button>
+      <button
+        type="button"
+        (click)="guardarCompra()"
+        class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-lg cursor-pointer font-medium text-sm transition-all hover:-translate-y-0.5 hover:bg-blue-700 hover:border-blue-700 hover:shadow-md"
+        title="Guardar compra"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <span>Guardar</span>
+      </button>
+    </div>
   </div>
 
-  <table border="1" width="100%" style="margin-top:20px">
-    <thead>
-      <tr>
-        <th>Producto</th>
-        <th>Cant.</th>
-        <th>Costo</th>
-        <th>Subtotal</th>
-        <th></th>
-      </tr>
-    </thead>
+  
+  <section class="px-0 pb-3">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div class="mb-0">
+        <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Proveedor</label>
+        <select
+          [(ngModel)]="compra.id_proveedor"
+          name="id_proveedor"
+          class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
+        >
+          <option value="0">Seleccione proveedor</option>
+          <option *ngFor="let p of proveedores" [value]="p.id_proveedor">
+            {{ p.nombre }}
+          </option>
+        </select>
+      </div>
 
-    <tbody>
-        <tr *ngFor="let d of detalles; let i = index">
-            <td>{{ getNombreProducto(d.id_producto) }}</td>
-            <td>{{ d.cantidad }}</td>
-            <td>{{ d.costo_unitario }}</td>
-            <td>{{ d.subtotal }}</td>
-            <td>
-            <button (click)="eliminarDetalle(i)">🗑️</button>
-            </td>
+      <div class="mb-0">
+        <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">N° Documento</label>
+        <input
+          type="text"
+          [(ngModel)]="compra.nro_documento"
+          name="nro_documento"
+          class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
+          placeholder="Ej: F001-000123"
+        />
+      </div>
+    </div>
+  </section>
+
+  
+  <div class="flex items-center justify-between px-0 py-1.5 mb-2 border-b border-gray-200">
+    <div class="flex items-center text-gray-900 text-xs font-semibold uppercase gap-2">
+      <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+      </svg>
+      <span>DETALLE DE COMPRA</span>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <div class="text-right">
+        <div class="text-xs text-gray-600">Total</div>
+        <div class="text-lg font-semibold text-gray-900">
+          S/. {{ (compra.total || 0).toFixed(2) }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <section class="px-0 pb-3">
+    <div class="flex flex-wrap gap-2 p-3 border border-gray-200 rounded-lg bg-white">
+      <select
+        [(ngModel)]="nuevoDetalle.id_producto"
+        class="flex-1 min-w-[220px] px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
+      >
+        <option value="0">Producto</option>
+        <option *ngFor="let p of productos" [value]="p.id_producto">
+          {{ p.nombre }}
+        </option>
+      </select>
+
+      <input
+        type="number"
+        [(ngModel)]="nuevoDetalle.cantidad"
+        min="1"
+        placeholder="Cantidad"
+        class="w-[130px] px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
+      />
+
+      <input
+        type="number"
+        [(ngModel)]="nuevoDetalle.costo_unitario"
+        min="0"
+        step="0.01"
+        placeholder="Costo"
+        class="w-[140px] px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
+      />
+
+      <button
+        type="button"
+        (click)="agregarDetalle()"
+        class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-lg cursor-pointer font-medium text-sm transition-all hover:-translate-y-0.5 hover:bg-blue-700 hover:border-blue-700 hover:shadow-md"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Agregar</span>
+      </button>
+    </div>
+  </section>
+
+  
+  <section class="rounded-none border-none bg-transparent overflow-auto shadow-none px-0 pb-2">
+    <table class="w-full border-collapse min-w-[860px]" *ngIf="detalles?.length; else sinDetalles">
+      <thead>
+        <tr>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">
+            Producto
+          </th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">
+            Cant.
+          </th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">
+            Costo
+          </th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">
+            Subtotal
+          </th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">
+            Acciones
+          </th>
         </tr>
-    </tbody>
+      </thead>
 
-  </table>
+      <tbody>
+        <tr *ngFor="let d of detalles; let i = index" class="hover:bg-blue-50 transition-colors">
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-900 text-sm">
+            <div class="font-semibold text-gray-900 tracking-wide leading-snug">
+              {{ getNombreProducto(d.id_producto) }}
+            </div>
+          </td>
 
-  <h3>Total: S/. {{ compra.total }}</h3>
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-600 text-sm">
+            {{ d.cantidad }}
+          </td>
 
-  <button (click)="guardarCompra()">Guardar Compra</button>
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-600 text-sm">
+            S/. {{ d.costo_unitario }}
+          </td>
+
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-900 text-sm font-semibold">
+            S/. {{ d.subtotal }}
+          </td>
+
+          <td class="py-4 px-4 border-b border-gray-100 align-middle">
+            <div class="flex gap-2.5 justify-end">
+              <button
+                type="button"
+                (click)="eliminarDetalle(i)"
+                class="border border-red-300 bg-red-50 text-red-700 rounded-lg px-3.5 py-2 cursor-pointer inline-flex items-center gap-2 transition-all hover:-translate-y-0.5 hover:bg-red-100 hover:border-red-400 hover:shadow text-xs font-medium whitespace-nowrap"
+                title="Eliminar"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                <span>Eliminar</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #sinDetalles>
+      <div class="py-10 px-6 text-center text-gray-600 border border-dashed border-gray-300 rounded-lg bg-white">
+        <svg class="w-10 h-10 mx-auto mb-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+        </svg>
+        <h3 class="m-0 mb-2 text-gray-900 font-semibold">Sin detalle agregado</h3>
+        <p class="m-0 text-gray-600">Agrega productos para construir la compra.</p>
+      </div>
+    </ng-template>
+  </section>
+
+  
+  <div class="flex items-center justify-between px-0 py-1.5 mt-2 mb-2 border-b border-gray-200">
+    <div class="flex items-center text-gray-900 text-xs font-semibold uppercase gap-2">
+      <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>HISTORIAL DE COMPRAS</span>
+    </div>
+  </div>
+
+  
+  <section class="rounded-none border-none bg-transparent overflow-auto shadow-none px-0 pb-2">
+    <table class="w-full border-collapse min-w-[960px]" *ngIf="compras?.length; else sinHistorial">
+      <thead>
+        <tr>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">
+            ID
+          </th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">
+            Proveedor
+          </th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">
+            Fecha
+          </th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">
+            Documento
+          </th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">
+            Total
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let c of compras" class="hover:bg-blue-50 transition-colors">
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-600 text-sm">
+            {{ c.id_compra }}
+          </td>
+
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-900 text-sm">
+            <div class="font-semibold text-gray-900 tracking-wide leading-snug">
+              {{ c.proveedores?.nombre || '-' }}
+            </div>
+          </td>
+
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-600 text-sm">
+            {{ c.fecha | date:'short' }}
+          </td>
+
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-600 text-sm">
+            {{ c.nro_documento || '-' }}
+          </td>
+
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-900 text-sm font-semibold">
+            S/. {{ c.total }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #sinHistorial>
+      <div class="py-12 px-6 text-center text-gray-600 border border-dashed border-gray-300 rounded-lg bg-white">
+        <svg class="w-12 h-12 mx-auto mb-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h3 class="m-0 mb-2 text-gray-900 font-semibold">No hay compras registradas</h3>
+        <p class="m-0 text-gray-600">Aquí aparecerán tus compras guardadas.</p>
+      </div>
+    </ng-template>
+  </section>
 </div>
-
-<hr />
-
-<!-- LISTA DE COMPRAS -->
-<h2>Historial de Compras</h2>
-
-<table border="1" width="100%">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Proveedor</th>
-      <th>Fecha</th>
-      <th>Documento</th>
-      <th>Total</th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr *ngFor="let c of compras">
-      <td>{{ c.id_compra }}</td>
-      <td>{{ c.proveedores?.nombre }}</td>
-      <td>{{ c.fecha | date:'short' }}</td>
-      <td>{{ c.nro_documento }}</td>
-      <td>S/. {{ c.total }}</td>
-    </tr>
-  </tbody>
-</table>

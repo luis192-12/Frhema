@@ -4,4 +4,14 @@ export interface Proveedor {
   contacto?: string;
   telefono?: string;
   direccion?: string;
+  
+  // CAMPOS NUEVOS - Agregar a la tabla `proveedores` en Supabase:
+  // - tipo_documento (text)      -> tipoDocumento
+  // - numero_documento (text)    -> numeroDocumento
+  // - correo (text)               -> correo
+  // - activo (boolean, default true) -> activo
+  tipoDocumento?: string;
+  numeroDocumento?: string;
+  correo?: string;
+  activo?: boolean;
 }

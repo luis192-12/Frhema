@@ -19,9 +19,12 @@ import { Proveedor } from '../../core/models/proveedor.model';
 export class ProductosComponent implements OnInit {
 
   productos: Producto[] = [];
+  productosFiltrados: Producto[] = [];
   categorias: Categoria[] = [];
   proveedores: Proveedor[] = [];
   loading = true;
+  terminoBusqueda = '';
+  mostrarFormulario = false;
 
   // formulario
   modoEdicion = false;
@@ -78,7 +81,21 @@ export class ProductosComponent implements OnInit {
   async cargarProductos() {
     this.loading = true;
     this.productos = await this.productosService.getProductos();
+    this.filtrarProductos();
     this.loading = false;
+  }
+
+  filtrarProductos() {
+    if (!this.terminoBusqueda.trim()) {
+      this.productosFiltrados = this.productos;
+    } else {
+      const termino = this.terminoBusqueda.toLowerCase();
+      this.productosFiltrados = this.productos.filter(p =>
+        p.codigo?.toLowerCase().includes(termino) ||
+        p.nombre?.toLowerCase().includes(termino) ||
+        p.descripcion?.toLowerCase().includes(termino)
+      );
+    }
   }
 
   // ============================
@@ -86,6 +103,7 @@ export class ProductosComponent implements OnInit {
   // ============================
   nuevoProducto() {
     this.modoEdicion = false;
+    this.mostrarFormulario = !this.mostrarFormulario;
     this.producto = this.getEmptyProducto();
   }
 
@@ -94,6 +112,7 @@ export class ProductosComponent implements OnInit {
   // ============================
   editarProducto(p: Producto) {
     this.modoEdicion = true;
+    this.mostrarFormulario = true;
     this.producto = { ...p };
   }
 
@@ -112,6 +131,7 @@ export class ProductosComponent implements OnInit {
 
       this.producto = this.getEmptyProducto();
       this.modoEdicion = false;
+      this.mostrarFormulario = false;
       this.cargarProductos();
 
     } catch (err) {

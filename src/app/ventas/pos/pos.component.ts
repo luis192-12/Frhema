@@ -241,6 +241,16 @@ export class PosComponent implements OnInit {
     this.venta.total = this.carrito.reduce((sum, x) => sum + (x.subtotal ?? 0), 0);
   }
 
+  limpiarVenta() {
+    this.carrito = [];
+    this.venta.total = 0;
+    this.venta.id_cliente = 0;
+    this.venta.tipo_comprobante = 'Boleta';
+    this.venta.metodo_pago = 'Efectivo';
+    this.venta.nro_comprobante = '';
+    this.formProducto = { id_producto: 0, cantidad: 1, descuento: 0 };
+  }
+
   async procesarVenta() {
     if (!this.venta.id_cliente || this.venta.id_cliente === 0) {
       alert('Seleccione cliente');
@@ -257,12 +267,7 @@ export class PosComponent implements OnInit {
 
       alert(`Venta procesada correctamente (#${id})`);
 
-      this.carrito = [];
-      this.venta.total = 0;
-      this.venta.id_cliente = 0;
-      this.venta.tipo_comprobante = 'Boleta';
-      this.venta.metodo_pago = 'Efectivo';
-      this.venta.nro_comprobante = '';
+      this.limpiarVenta();
 
     } catch (err) {
       console.error(err);

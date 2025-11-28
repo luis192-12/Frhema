@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-registro',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink], // <-- AQUI
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './registro.component.html',
 })
 export class RegistroComponent {

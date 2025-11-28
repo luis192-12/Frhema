@@ -1,81 +1,226 @@
-<h2>POS - Punto de Venta</h2>
-
-<!-- DATOS DE VENTA -->
-<div style="border:1px solid #ccc; padding:1rem; margin-bottom:20px;">
+<div class="w-full max-w-[1200px] mx-auto flex flex-col px-2 md:px-3 pb-2">
   
-  <label>Cliente:</label>
-  <select [(ngModel)]="venta.id_cliente">
-    <option value="0">Seleccione cliente</option>
-    <option *ngFor="let c of clientes" [value]="c.id_cliente">
-      {{ c.nombre }}
-    </option>
-  </select>
+  <header class="flex items-start justify-between gap-4 px-0 py-3 pb-2 bg-transparent border-none shadow-none">
+    <div class="flex-1">
+      <div class="flex items-center gap-3">
+        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+        <div>
+          <h1 class="m-0 text-2xl font-semibold text-gray-900 tracking-wide">Punto de Venta (POS)</h1>
+          <p class="mt-1 mb-0 text-sm text-gray-600">Procesa ventas rápidas y genera comprobantes de pago.</p>
+        </div>
+      </div>
+    </div>
+  </header>
 
-  <label>Comprobante:</label>
-  <select [(ngModel)]="venta.tipo_comprobante">
-    <option>Boleta</option>
-    <option>Factura</option>
-  </select>
+  
+  <div class="flex items-center justify-between px-0 py-1.5 mb-1.5 border-b border-gray-200">
+    <div class="flex items-center text-gray-900 text-xs font-semibold uppercase gap-2">
+      <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+      </svg>
+      <span>DATOS DE VENTA</span>
+    </div>
+  </div>
 
-  <label>N° Comprobante:</label>
-  <input type="text" [(ngModel)]="venta.nro_comprobante" />
+  
+  <section class="px-0 pb-3">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div class="mb-0">
+        <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Cliente</label>
+        <select
+          [(ngModel)]="venta.id_cliente"
+          name="id_cliente"
+          class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
+        >
+          <option [value]="0">Seleccione cliente</option>
+          <option *ngFor="let c of clientes" [value]="c.id_cliente">
+            {{ c.nombre }}
+          </option>
+        </select>
+      </div>
 
-  <label>Método de pago:</label>
-  <select [(ngModel)]="venta.metodo_pago">
-    <option>Efectivo</option>
-    <option>Tarjeta</option>
-    <option>Transferencia</option>
-  </select>
+      <div class="mb-0">
+        <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Comprobante</label>
+        <select
+          [(ngModel)]="venta.tipo_comprobante"
+          name="tipo_comprobante"
+          class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
+        >
+          <option>Boleta</option>
+          <option>Factura</option>
+        </select>
+      </div>
 
+      <div class="mb-0">
+        <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">N° Comprobante</label>
+        <input
+          type="text"
+          [(ngModel)]="venta.nro_comprobante"
+          name="nro_comprobante"
+          class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
+          placeholder="Ej: B001-000123"
+        />
+      </div>
+
+      <div class="mb-0">
+        <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Método de pago</label>
+        <select
+          [(ngModel)]="venta.metodo_pago"
+          name="metodo_pago"
+          class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
+        >
+          <option>Efectivo</option>
+          <option>Tarjeta</option>
+          <option>Transferencia</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  
+  <div class="flex items-center justify-between px-0 py-1.5 mb-1.5 border-b border-gray-200">
+    <div class="flex items-center text-gray-900 text-xs font-semibold uppercase gap-2">
+      <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+      <span>AGREGAR PRODUCTO</span>
+    </div>
+  </div>
+
+  
+  <section class="px-0 pb-3">
+    <div class="flex flex-wrap gap-2 p-3 border border-gray-200 rounded-lg bg-white">
+      <select
+        [(ngModel)]="formProducto.id_producto"
+        class="flex-1 min-w-[220px] px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
+      >
+        <option [value]="0">Producto</option>
+        <option *ngFor="let p of productos" [value]="p.id_producto">
+          {{ p.nombre }} — S/. {{ p.precio_unitario }}
+        </option>
+      </select>
+
+      <input
+        type="number"
+        [(ngModel)]="formProducto.cantidad"
+        min="1"
+        placeholder="Cantidad"
+        class="w-[130px] px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
+      />
+
+      <input
+        type="number"
+        [(ngModel)]="formProducto.descuento"
+        min="0"
+        step="0.01"
+        placeholder="Descuento"
+        class="w-[140px] px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
+      />
+
+      <button
+        type="button"
+        (click)="agregarProducto()"
+        class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-lg cursor-pointer font-medium text-sm transition-all hover:-translate-y-0.5 hover:bg-blue-700 hover:border-blue-700 hover:shadow-md"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        <span>Agregar</span>
+      </button>
+    </div>
+  </section>
+
+  
+  <div class="flex items-center justify-between px-0 py-1.5 mb-1.5 border-b border-gray-200">
+    <div class="flex items-center text-gray-900 text-xs font-semibold uppercase gap-2">
+      <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+      </svg>
+      <span>CARRITO</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="text-right">
+        <div class="text-xs text-gray-600">Total</div>
+        <div class="text-lg font-semibold text-orange-600">
+          S/. {{ (venta.total || 0).toFixed(2) }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <section class="rounded-none border-none bg-transparent overflow-auto shadow-none px-0 pb-2">
+    <table class="w-full border-collapse min-w-[860px]" *ngIf="carrito.length; else sinCarrito">
+      <thead>
+        <tr>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Producto</th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Cant.</th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Precio</th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Desc.</th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Subtotal</th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let d of carrito; let i = index" class="hover:bg-blue-50 transition-colors">
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-900 text-sm font-semibold">{{ getNombreProducto(d.id_producto) }}</td>
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-600 text-sm">{{ d.cantidad }}</td>
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-600 text-sm">S/. {{ d.precio_unitario }}</td>
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-600 text-sm">S/. {{ d.descuento || 0 }}</td>
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-900 text-sm font-semibold">S/. {{ d.subtotal }}</td>
+          <td class="py-4 px-4 border-b border-gray-100 align-middle">
+            <div class="flex gap-2.5 justify-end">
+              <button
+                type="button"
+                (click)="eliminar(i)"
+                class="border border-red-300 bg-red-50 text-red-700 rounded-lg px-3.5 py-2 cursor-pointer inline-flex items-center gap-2 transition-all hover:-translate-y-0.5 hover:bg-red-100 hover:border-red-400 hover:shadow text-xs font-medium whitespace-nowrap"
+                title="Eliminar"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+                <span>Eliminar</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #sinCarrito>
+      <div class="py-10 px-6 text-center text-gray-600 border border-dashed border-gray-300 rounded-lg bg-white">
+        <svg class="w-10 h-10 mx-auto mb-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+        <h3 class="m-0 mb-2 text-gray-900 font-semibold">Carrito vacío</h3>
+        <p class="m-0 text-gray-600">Agrega productos para comenzar la venta.</p>
+      </div>
+    </ng-template>
+  </section>
+
+  
+  <div class="flex justify-end gap-2 mt-3">
+    <button
+      type="button"
+      (click)="limpiarVenta()"
+      class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-900 rounded-lg cursor-pointer font-medium text-sm transition-all hover:-translate-y-0.5 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+      <span>Limpiar</span>
+    </button>
+    <button
+      type="button"
+      (click)="procesarVenta()"
+      class="inline-flex items-center gap-2 px-6 py-2.5 bg-orange-600 text-white border border-orange-600 rounded-lg cursor-pointer font-medium text-sm transition-all hover:-translate-y-0.5 hover:bg-orange-700 hover:border-orange-700 hover:shadow-md"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <span>Procesar Venta</span>
+    </button>
+  </div>
 </div>
-
-<!-- FORMULARIO DE PRODUCTO -->
-<h3>Agregar Producto</h3>
-
-<div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
-
-  <select [(ngModel)]="formProducto.id_producto">
-    <option value="0">Producto</option>
-    <option *ngFor="let p of productos" [value]="p.id_producto">
-      {{ p.nombre }} — S/. {{ p.precio_unitario }}
-    </option>
-  </select>
-
-  <input type="number" min="1" [(ngModel)]="formProducto.cantidad" placeholder="Cant." />
-
-  <input type="number" min="0" [(ngModel)]="formProducto.descuento" placeholder="Desc." />
-
-  <button (click)="agregarProducto()">Agregar</button>
-
-</div>
-
-<!-- TABLA DEL CARRITO -->
-<table border="1" width="100%" style="margin-top:20px;">
-  <thead>
-    <tr>
-      <th>Producto</th>
-      <th>Cant.</th>
-      <th>Precio</th>
-      <th>Desc.</th>
-      <th>Subtotal</th>
-      <th></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr *ngFor="let d of carrito; let i = index">
-      <td>{{ getNombreProducto(d.id_producto) }}</td>
-      <td>{{ d.cantidad }}</td>
-      <td>{{ d.precio_unitario }}</td>
-      <td>{{ d.descuento }}</td>
-      <td>{{ d.subtotal }}</td>
-      <td>
-        <button (click)="eliminar(i)">🗑️</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<h2>Total: S/. {{ venta.total }}</h2>
-
-<button (click)="procesarVenta()">Procesar Venta</button>

@@ -1,36 +1,109 @@
-<h2>Gestión de Usuarios y Roles</h2>
+<div class="w-full max-w-[1200px] mx-auto flex flex-col px-2 md:px-3 pb-2">
+  
+  <header class="flex items-start justify-between gap-4 px-0 py-3 pb-2 bg-transparent border-none shadow-none">
+    <div class="flex-1">
+      <div class="flex items-center gap-3">
+        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+        <div>
+          <h1 class="m-0 text-2xl font-semibold text-gray-900 tracking-wide">Gestión de Usuarios y Roles</h1>
+          <p class="mt-1 mb-0 text-sm text-gray-600">Administra usuarios y asigna roles del sistema.</p>
+        </div>
+      </div>
+    </div>
+  </header>
 
-<div *ngIf="loading">Cargando usuarios...</div>
+  
+  <div class="flex items-center justify-between px-0 py-1.5 mb-1.5 border-b border-gray-200">
+    <div class="flex items-center text-gray-900 text-xs font-semibold uppercase gap-2">
+      <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+      </svg>
+      <span>REGISTROS</span>
+    </div>
+  </div>
 
-<table *ngIf="!loading" border="1" width="100%">
-  <thead>
-    <tr>
-      <th>Usuario</th>
-      <th>Nombre</th>
-      <th>Apellido</th>
-      <th>Rol actual</th>
-      <th>Asignar rol</th>
-      <th>Acción</th>
-    </tr>
-  </thead>
+  
+  <div class="px-0 pb-2">
+    <label class="flex items-center gap-2 text-sm text-gray-900 font-medium">
+      Search:
+      <input
+        type="search"
+        placeholder=""
+        class="px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-900 bg-white outline-none transition-all focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+      />
+    </label>
+  </div>
 
-  <tbody>
-    <tr *ngFor="let u of usuarios">
-      <td>{{ u.nombre_usuario }}</td>
-      <td>{{ u.nombre }}</td>
-      <td>{{ u.apellido }}</td>
-      <td>{{ u.roles?.nombre_rol || 'SIN ROL' }}</td>
-      <td>
-        <select [(ngModel)]="u.id_rol">
-          <option [ngValue]="null">SIN ROL</option>
-          <option *ngFor="let r of roles" [ngValue]="r.id_rol">
-            {{ r.nombre_rol }}
-          </option>
-        </select>
-      </td>
-      <td>
-        <button (click)="guardarRol(u)">Guardar</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+  
+  <section class="rounded-none border-none bg-transparent overflow-auto shadow-none px-0 pb-2">
+    <div *ngIf="loading" class="p-6 text-center text-gray-500">Cargando usuarios...</div>
+    <table class="w-full border-collapse min-w-[960px]" *ngIf="!loading && usuarios.length; else sinDatos">
+      <thead>
+        <tr>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Usuario</th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Nombre</th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Apellido</th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Rol actual</th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Asignar rol</th>
+          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of usuarios" class="hover:bg-blue-50 transition-colors">
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-900 text-sm font-semibold">{{ u.nombre_usuario }}</td>
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-900 text-sm">{{ u.nombre || '-' }}</td>
+          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-900 text-sm">{{ u.apellido || '-' }}</td>
+          <td class="py-4 px-4 border-b border-gray-100 align-middle">
+            <span 
+              class="px-2 py-1 rounded-full text-xs font-medium"
+              [class.bg-blue-100]="u.roles?.nombre_rol"
+              [class.text-blue-700]="u.roles?.nombre_rol"
+              [class.bg-gray-100]="!u.roles?.nombre_rol"
+              [class.text-gray-700]="!u.roles?.nombre_rol">
+              {{ u.roles?.nombre_rol || 'SIN ROL' }}
+            </span>
+          </td>
+          <td class="py-4 px-4 border-b border-gray-100 align-middle">
+            <select 
+              [(ngModel)]="u.id_rol"
+              class="px-3 py-2 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
+            >
+              <option [ngValue]="null">SIN ROL</option>
+              <option *ngFor="let r of roles" [ngValue]="r.id_rol">
+                {{ r.nombre_rol }}
+              </option>
+            </select>
+          </td>
+          <td class="py-4 px-4 border-b border-gray-100 align-middle">
+            <div class="flex gap-2.5 justify-end">
+              <button
+                (click)="guardarRol(u)"
+                class="border border-gray-300 bg-white text-gray-900 rounded-lg px-3.5 py-2 cursor-pointer inline-flex items-center gap-2 transition-all hover:-translate-y-0.5 hover:bg-gray-50 hover:border-gray-400 hover:shadow text-xs font-medium whitespace-nowrap"
+                title="Guardar rol"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>Guardar</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #sinDatos>
+      <div class="py-12 px-6 text-center text-gray-600">
+        <svg class="w-12 h-12 mx-auto mb-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+        <h3 class="m-0 mb-2 text-gray-900 font-semibold">No hay usuarios registrados</h3>
+        <p class="m-0 text-gray-600">Los usuarios aparecerán aquí cuando se registren en el sistema.</p>
+      </div>
+    </ng-template>
+  </section>
+</div>

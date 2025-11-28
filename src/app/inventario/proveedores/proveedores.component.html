@@ -1,58 +1,482 @@
-<h2>Gestión de Proveedores</h2>
+<div class="w-full max-w-[1200px] mx-auto flex flex-col px-2 md:px-3 pb-4">
+  
+  <div class="px-0 pt-1 pb-3 border-b border-gray-200">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div>
+        <h2 class="text-xl md:text-2xl font-bold text-gray-900">
+          <span class="inline-flex items-center gap-3">
+            <span class="p-2 rounded-xl bg-blue-50 border border-blue-100">
+              <svg class="w-5 h-5 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+              </svg>
+            </span>
+            Gestión de Proveedores
+          </span>
+        </h2>
+        <p class="mt-1 text-xs md:text-sm text-gray-600">
+          Administra y organiza tus proveedores e historial de compras.
+        </p>
+      </div>
 
-<button (click)="nuevoProveedor()">➕ Nuevo Proveedor</button>
+      
+      <nav class="mt-2 md:mt-0" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2 text-sm">
+          <li>
+            <a routerLink="/dashboard" class="flex items-center text-blue-700 hover:text-blue-800 transition-colors">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3"/>
+              </svg>
+              Dashboard
+            </a>
+          </li>
+          <li class="flex items-center">
+            <span class="text-gray-400 mx-1">/</span>
+            <span class="text-gray-500">Proveedores</span>
+          </li>
+          <li class="flex items-center">
+            <span class="text-gray-400 mx-1">/</span>
+            <span class="font-medium text-gray-800">Listado</span>
+          </li>
+        </ol>
+      </nav>
+    </div>
+  </div>
 
-<!-- FORMULARIO -->
-<div style="margin-top:20px; border:1px solid #ccc; padding:1rem;">
-  <h3>{{ modoEdicion ? 'Editar Proveedor' : 'Nuevo Proveedor' }}</h3>
+  
+  <div class="bg-white rounded-xl border border-gray-200 shadow-sm mt-3 p-2 md:p-4">
+    
+    <div class="flex items-center justify-between py-2 mb-3 border-b border-gray-200">
+      <div class="flex items-center text-gray-700 text-xs font-semibold ml-1 gap-2 uppercase tracking-wide">
+        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+        </svg>
+        <span>REGISTROS</span>
+      </div>
 
-  <form (ngSubmit)="guardarProveedor()">
+      <div class="flex items-center gap-2" *ngIf="!editando && !mostrarFormulario">
+        <button
+          type="button"
+          (click)="nuevo()"
+          class="flex items-center justify-center p-2 text-xs font-semibold uppercase bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md
+                 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          Nuevo proveedor
+        </button>
 
-    <label>Nombre:</label>
-    <input type="text" [(ngModel)]="proveedor.nombre" name="nombre" required />
+        <button
+          type="button"
+          (click)="exportarExcel()"
+          class="flex items-center justify-center p-2 text-xs font-semibold bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 rounded-lg shadow-sm
+                 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-200"
+          title="Exportar"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 17v-2m3 2v-4m3 4v-6M7 7h10M7 7a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V9a2 2 0 00-2-2"/>
+          </svg>
+          Excel
+        </button>
+      </div>
+    </div>
 
-    <label>Contacto:</label>
-    <input type="text" [(ngModel)]="proveedor.contacto" name="contacto" />
+    
+    <div class="flex items-center justify-between gap-3 mb-3">
+      <label class="flex items-center gap-2 text-sm text-gray-800 font-medium">
+        Search:
+        <input
+          type="search"
+          [(ngModel)]="terminoBusqueda"
+          placeholder=""
+          class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 bg-white outline-none transition-all
+                 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+        />
+      </label>
+    </div>
 
-    <label>Teléfono:</label>
-    <input type="text" [(ngModel)]="proveedor.telefono" name="telefono" />
+    
+    <div class="w-full overflow-x-auto pb-2">
+      <table class="w-full whitespace-nowrap min-w-[1100px]" *ngIf="proveedoresFiltrados.length; else sinDatos">
+        <thead>
+          <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
+            <th class="px-4 py-3">Proveedor</th>
+            <th class="px-4 py-3">Documento</th>
+            <th class="px-4 py-3">Teléfono</th>
+            <th class="px-4 py-3">Email</th>
+            <th class="px-4 py-3">Dirección</th>
+            <th class="px-4 py-3">Estado</th>
+            <th class="px-4 py-3 text-right">
+              <svg class="w-4 h-4 inline-block text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M14.7 6.3a1 1 0 011.4 0l1.6 1.6a1 1 0 010 1.4l-8.4 8.4-3.3.8.8-3.3 8.4-8.4z"/>
+              </svg>
+            </th>
+          </tr>
+        </thead>
 
-    <label>Dirección:</label>
-    <input type="text" [(ngModel)]="proveedor.direccion" name="direccion" />
+        <tbody class="bg-white divide-y divide-gray-100">
+          <tr *ngFor="let p of proveedoresFiltrados" class="text-gray-700 hover:bg-gray-50">
+            
+            <td class="px-4 py-2 font-semibold text-xs">
+              <div class="text-gray-900 text-sm font-semibold leading-snug">
+                {{ p.nombre }}
+              </div>
+              <div class="text-xs text-gray-500 mt-0.5" *ngIf="p.contacto">
+                {{ p.contacto }}
+              </div>
+            </td>
 
-    <button type="submit">
-      {{ modoEdicion ? 'Actualizar' : 'Registrar' }}
-    </button>
+            
+            <td class="px-4 py-2">
+              <strong class="block text-gray-600 text-xs">
+                {{ p.tipoDocumento || '-' }}
+              </strong>
+              <span class="font-semibold text-xs text-gray-900">
+                {{ p.numeroDocumento || '-' }}
+              </span>
+            </td>
 
-  </form>
+            
+            <td class="px-4 py-2 text-xs font-semibold">
+              {{ p.telefono || '-' }}
+            </td>
+
+            
+            <td class="px-4 py-2 text-xs font-semibold">
+              {{ p.correo || '-' }}
+            </td>
+
+            
+            <td class="px-4 py-2 text-xs max-w-[360px]">
+              <span class="line-clamp-2">
+                {{ p.direccion || '-' }}
+              </span>
+            </td>
+
+            
+            <td class="px-4 py-2">
+              <div class="flex items-center gap-3">
+                
+                <span
+                  class="inline-flex items-center justify-center"
+                  [attr.aria-label]="p.activo ? 'Activo' : 'Inactivo'"
+                >
+                  <svg *ngIf="p.activo" class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <svg *ngIf="!p.activo" class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </span>
+
+                
+                <label class="inline-flex relative items-center cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    class="sr-only peer"
+                    [(ngModel)]="p.activo"
+                    (ngModelChange)="cambiarEstado(p, $event)"
+                    [name]="'estado_' + (p.id_proveedor || p.nombre)"
+                  />
+                  <span
+                    class="w-9 h-5 bg-gray-200 rounded-full peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-200
+                           peer-checked:bg-blue-600 relative
+                           after:content-[''] after:absolute after:top-[1px] after:left-[2px]
+                           after:bg-white after:border after:border-gray-300 after:rounded-full after:h-[18px] after:w-4
+                           after:transition-all peer-checked:after:translate-x-full"
+                  ></span>
+                </label>
+              </div>
+            </td>
+
+            
+            <td class="px-4 py-1">
+              <div class="flex items-center justify-end gap-2">
+                <button
+                  class="p-2 text-blue-600 rounded-lg hover:bg-blue-50 border border-gray-200"
+                  type="button"
+                  (click)="editar(p)"
+                  title="Editar"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                  </svg>
+                </button>
+
+                <button
+                  class="p-2 text-red-600 rounded-lg hover:bg-red-50 border border-gray-200"
+                  type="button"
+                  (click)="eliminar(p)"
+                  title="Eliminar"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ng-template #sinDatos>
+        <div class="py-12 px-6 text-center text-gray-600">
+          <div class="w-12 h-12 mx-auto mb-4 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+            <svg class="w-6 h-6 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5"/>
+            </svg>
+          </div>
+          <h3 class="m-0 mb-2 text-gray-900 font-semibold">No hay proveedores registrados</h3>
+          <p class="m-0 mb-6 text-gray-600">Crea uno con el botón <b>Nuevo proveedor</b>.</p>
+          <button
+            type="button"
+            (click)="nuevo()"
+            *ngIf="!editando"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-blue-700 hover:shadow-md transition-all"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Nuevo proveedor
+          </button>
+        </div>
+      </ng-template>
+    </div>
+  </div>
 </div>
 
-<hr />
 
-<!-- TABLA -->
-<table border="1" width="100%" style="margin-top:20px">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Nombre</th>
-      <th>Contacto</th>
-      <th>Teléfono</th>
-      <th>Dirección</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
+<div
+  class="fixed inset-0 z-[2000] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+  *ngIf="mostrarFormulario || editando"
+  (click)="cerrarModal($event)"
+>
+  <div
+    (click)="$event.stopPropagation()"
+    class="w-full max-w-xl bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden"
+  >
+    
+    <div class="flex items-center justify-between p-4 md:p-5 border-b border-gray-200">
+      <h3 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+        <span class="p-2 rounded-xl bg-blue-50 border border-blue-100">
+          <svg class="w-5 h-5 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+          </svg>
+        </span>
+        {{ editando ? 'Editar Proveedor' : 'Nuevo Proveedor' }}
+      </h3>
 
-  <tbody>
-    <tr *ngFor="let p of proveedores">
-      <td>{{ p.id_proveedor }}</td>
-      <td>{{ p.nombre }}</td>
-      <td>{{ p.contacto }}</td>
-      <td>{{ p.telefono }}</td>
-      <td>{{ p.direccion }}</td>
-      <td>
-        <button (click)="editarProveedor(p)">✏️ Editar</button>
-        <button (click)="eliminarProveedor(p.id_proveedor!)">🗑️ Eliminar</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+      <button
+        type="button"
+        class="text-gray-500 hover:bg-gray-100 hover:text-gray-900 rounded-lg w-9 h-9 inline-flex items-center justify-center"
+        (click)="cerrarModalDirecto()"
+        title="Cerrar"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    
+    <div class="flex justify-center gap-2 px-3 pt-4 text-xs uppercase font-semibold">
+      <button
+        type="button"
+        (click)="modoBusqueda='manual'"
+        class="px-4 py-2 rounded-lg border transition-all"
+        [class.bg-blue-600]="modoBusqueda==='manual'"
+        [class.text-white]="modoBusqueda==='manual'"
+        [class.border-blue-600]="modoBusqueda==='manual'"
+        [class.bg-white]="modoBusqueda!=='manual'"
+        [class.text-gray-700]="modoBusqueda!=='manual'"
+        [class.border-gray-400]="modoBusqueda!=='manual'"
+      >
+        Manual
+      </button>
+
+      <button
+        type="button"
+        (click)="modoBusqueda='dni'"
+        class="px-4 py-2 rounded-lg border transition-all"
+        [class.bg-blue-600]="modoBusqueda==='dni'"
+        [class.text-white]="modoBusqueda==='dni'"
+        [class.border-blue-600]="modoBusqueda==='dni'"
+        [class.bg-white]="modoBusqueda!=='dni'"
+        [class.text-gray-700]="modoBusqueda!=='dni'"
+        [class.border-gray-400]="modoBusqueda!=='dni'"
+      >
+        Buscar por DNI
+      </button>
+
+      <button
+        type="button"
+        (click)="modoBusqueda='ruc'"
+        class="px-4 py-2 rounded-lg border transition-all"
+        [class.bg-blue-600]="modoBusqueda==='ruc'"
+        [class.text-white]="modoBusqueda==='ruc'"
+        [class.border-blue-600]="modoBusqueda==='ruc'"
+        [class.bg-white]="modoBusqueda!=='ruc'"
+        [class.text-gray-700]="modoBusqueda!=='ruc'"
+        [class.border-gray-400]="modoBusqueda!=='ruc'"
+      >
+        Buscar por RUC
+      </button>
+    </div>
+
+    
+    <form (ngSubmit)="guardar()" class="p-4 md:p-5 space-y-4">
+      
+      <div *ngIf="modoBusqueda !== 'manual'" class="space-y-2">
+        <label class="block text-sm font-medium text-gray-900">
+          Número de documento <span class="text-red-500">*</span>
+        </label>
+
+        <div class="flex gap-2">
+          <input
+            type="text"
+            [(ngModel)]="numeroDocumentoBusqueda"
+            name="numeroDocumentoBusqueda"
+            [placeholder]="modoBusqueda==='dni' ? 'DNI de 8 dígitos' : 'RUC de 11 dígitos'"
+            [attr.maxlength]="modoBusqueda==='dni' ? 8 : 11"
+            required
+            class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
+                   focus:ring-2 focus:ring-blue-100 focus:border-blue-600 block p-2.5"
+          />
+
+          <button
+            type="button"
+            (click)="buscarDocumento()"
+            [disabled]="cargandoBusqueda"
+            class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold uppercase
+                   px-4 py-2 rounded-lg shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            {{ cargandoBusqueda ? 'Buscando...' : 'Buscar' }}
+          </button>
+        </div>
+      </div>
+
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <label class="block mb-2 text-sm font-medium text-gray-900">
+            Tipo de documento <span class="text-red-500">*</span>
+          </label>
+          <select
+            [(ngModel)]="proveedorActual.tipoDocumento"
+            name="tipoDocumento"
+            required
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
+                   focus:ring-2 focus:ring-blue-100 focus:border-blue-600 block w-full p-2.5"
+          >
+            <option value="" disabled>Seleccione…</option>
+            <option value="DNI">DNI</option>
+            <option value="RUC">RUC</option>
+            <option value="OTRO">OTRO</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block mb-2 text-sm font-medium text-gray-900">
+            Número de documento <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            [(ngModel)]="proveedorActual.numeroDocumento"
+            name="numeroDocumento"
+            required
+            placeholder="Ej: 71512528 / 20123456789"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
+                   focus:ring-2 focus:ring-blue-100 focus:border-blue-600 block w-full p-2.5"
+          />
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block mb-2 text-sm font-medium text-gray-900">
+            Nombre / Razón social <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            [(ngModel)]="proveedorActual.nombre"
+            name="nombre"
+            required
+            placeholder="Ej: FerreDistribuciones S.A.C."
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
+                   focus:ring-2 focus:ring-blue-100 focus:border-blue-600 block w-full p-2.5"
+          />
+        </div>
+
+        <div>
+          <label class="block mb-2 text-sm font-medium text-gray-900">Teléfono</label>
+          <input
+            type="text"
+            [(ngModel)]="proveedorActual.telefono"
+            name="telefono"
+            placeholder="Ej: +51 9xx xxx xxx"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
+                   focus:ring-2 focus:ring-blue-100 focus:border-blue-600 block w-full p-2.5"
+          />
+        </div>
+
+        <div>
+          <label class="block mb-2 text-sm font-medium text-gray-900">Correo electrónico</label>
+          <input
+            type="email"
+            [(ngModel)]="proveedorActual.correo"
+            name="correo"
+            placeholder="Ej: contacto@empresa.com"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
+                   focus:ring-2 focus:ring-blue-100 focus:border-blue-600 block w-full p-2.5"
+          />
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block mb-2 text-sm font-medium text-gray-900">Dirección</label>
+          <textarea
+            rows="2"
+            [(ngModel)]="proveedorActual.direccion"
+            name="direccion"
+            placeholder="Ej: Calle 123, Ciudad, País"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
+                   focus:ring-2 focus:ring-blue-100 focus:border-blue-600 block w-full p-2.5"
+          ></textarea>
+        </div>
+      </div>
+
+      
+      <div class="flex justify-center pt-4 border-t border-gray-200">
+        <button
+          type="button"
+          (click)="cerrarModalDirecto()"
+          class="flex items-center px-5 py-2.5 bg-white hover:bg-gray-50 text-gray-900 font-semibold rounded-lg text-sm
+                 border border-gray-300 transition-all"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          class="ml-2 flex items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm
+                 transition-all"
+        >
+          Guardar proveedor
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+s
