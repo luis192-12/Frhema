@@ -14,4 +14,19 @@ export interface Producto {
   fecha_vencimiento?: string | null; // ISO format
   tiene_garantia: boolean;
   meses_garantia?: number | null;
+  
+  // Campos nuevos para ferretería 
+  // - precio_compra (numeric, nullable) -> precio_compra
+  // - marca (text, nullable) -> marca
+  // - material (text, nullable) -> material
+  // - peso (numeric, nullable) -> peso
+  // - medidas (text, nullable) -> medidas
+  precio_compra?: number | null;
+  marca?: string | null;
+  material?: string | null;
+  peso?: number | null;
+  medidas?: string | null;
+  
+  // Campo para eliminación lógica (soft delete)
+  activo?: boolean;
 }

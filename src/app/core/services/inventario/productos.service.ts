@@ -65,4 +65,35 @@ export class ProductosService {
     if (error) throw error;
     return true;
   }
+
+  // ============================
+  // PRODUCTOS CON STOCK CRÍTICO
+  // ============================
+
+  async getProductosStockCritico(limite?: number): Promise<Producto[]> {
+    let query = this.supabase.client
+      .from(this.TABLE)
+      .select('*');
+    
+    if (limite !== undefined) {
+      query = query.lte('stock_actual', limite);
+    } else {
+      query = query.lte('stock_actual', 3);
+    }
+    
+    const { data, error } = await query
+      .order('stock_actual', { ascending: true })
+      .limit(20);
+
+    if (error) throw error;
+    
+    const productos = (data as Producto[]).filter(p => {
+      const stockActual = p.stock_actual || 0;
+      const stockMinimo = p.stock_minimo || 0;
+      const limiteUsar = limite !== undefined ? limite : (stockMinimo > 0 ? stockMinimo : 3);
+      return stockActual <= limiteUsar;
+    });
+    
+    return productos;
+  }
 }

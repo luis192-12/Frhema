@@ -83,4 +83,30 @@ export class ComprasService {
 
     return id_compra;
   }
+
+  // ============================
+  // OBTENER RESUMEN DE COMPRAS POR PRODUCTO
+  // ============================
+  async getResumenComprasPorProducto(id_producto: number): Promise<{
+    cantidad_total: number;
+    precio_unitario_promedio: number;
+    precio_total_compra: number;
+  }> {
+    const { data, error } = await this.supabase.client
+      .from(this.TABLE_DET)
+      .select('cantidad, costo_unitario, subtotal')
+      .eq('id_producto', id_producto);
+
+    if (error) throw error;
+
+    const cantidad_total = data?.reduce((sum, d) => sum + (d.cantidad || 0), 0) || 0;
+    const precio_total_compra = data?.reduce((sum, d) => sum + (d.subtotal || 0), 0) || 0;
+    const precio_unitario_promedio = cantidad_total > 0 ? precio_total_compra / cantidad_total : 0;
+
+    return {
+      cantidad_total,
+      precio_unitario_promedio,
+      precio_total_compra
+    };
+  }
 }

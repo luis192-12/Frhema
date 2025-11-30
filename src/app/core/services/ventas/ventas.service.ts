@@ -212,4 +212,115 @@ export class VentasService {
 
     return id_venta;
   }
+
+  // =========================================
+  // ESTADÍSTICAS DEL DASHBOARD
+  // =========================================
+
+  // Ventas de hoy (cantidad)
+  async getVentasHoyCount(): Promise<number> {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const hoyStr = hoy.toISOString().split('T')[0];
+    
+    // Obtener el final del día de hoy
+    const finHoy = new Date();
+    finHoy.setHours(23, 59, 59, 999);
+    const finHoyStr = finHoy.toISOString().split('T')[0] + 'T23:59:59.999Z';
+
+    const { count, error } = await this.supabase.client
+      .from(this.TABLE)
+      .select('id_venta', { count: 'exact', head: true })
+      .gte('fecha', hoyStr)
+      .lte('fecha', finHoyStr);
+
+    if (error) throw error;
+    return count || 0;
+  }
+
+  // Monto de ventas de hoy
+  async getMontoHoy(): Promise<number> {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const hoyStr = hoy.toISOString().split('T')[0];
+
+    const { data, error } = await this.supabase.client
+      .from(this.TABLE)
+      .select('total')
+      .gte('fecha', hoyStr);
+
+    if (error) throw error;
+    return data?.reduce((sum, v) => sum + (v.total || 0), 0) || 0;
+  }
+
+  // Ventas del mes (cantidad)
+  async getVentasMesCount(): Promise<number> {
+    const inicioMes = new Date();
+    inicioMes.setDate(1);
+    inicioMes.setHours(0, 0, 0, 0);
+    const inicioMesStr = inicioMes.toISOString().split('T')[0];
+
+    const { count, error } = await this.supabase.client
+      .from(this.TABLE)
+      .select('*', { count: 'exact', head: true })
+      .gte('fecha', inicioMesStr);
+
+    if (error) throw error;
+    return count || 0;
+  }
+
+  // Monto de ventas del mes
+  async getMontoMes(): Promise<number> {
+    const inicioMes = new Date();
+    inicioMes.setDate(1);
+    inicioMes.setHours(0, 0, 0, 0);
+    const inicioMesStr = inicioMes.toISOString().split('T')[0];
+
+    const { data, error } = await this.supabase.client
+      .from(this.TABLE)
+      .select('total')
+      .gte('fecha', inicioMesStr);
+
+    if (error) throw error;
+    return data?.reduce((sum, v) => sum + (v.total || 0), 0) || 0;
+  }
+
+  // Ventas recientes (hoy)
+  async getVentasRecientes(): Promise<any[]> {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const hoyStr = hoy.toISOString().split('T')[0];
+    
+    // Obtener el final del día de hoy
+    const finHoy = new Date();
+    finHoy.setHours(23, 59, 59, 999);
+    const finHoyStr = finHoy.toISOString().split('T')[0] + 'T23:59:59.999Z';
+
+    const { data, error } = await this.supabase.client
+      .from(this.TABLE)
+      .select(`
+        id_venta,
+        fecha,
+        total,
+        tipo_comprobante,
+        nro_comprobante,
+        metodo_pago,
+        clientes ( nombre ),
+        detalle_ventas (
+          id_producto,
+          cantidad,
+          productos (
+            stock_actual,
+            nombre
+          )
+        )
+      `)
+      .gte('fecha', hoyStr)
+      .lte('fecha', finHoyStr)
+      .order('fecha', { ascending: false })
+      .limit(10);
+
+    if (error) throw error;
+    return data || [];
+  }
 }
