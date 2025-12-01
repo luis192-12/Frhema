@@ -1,4 +1,3 @@
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { VentasService } from '../../core/services/ventas/ventas.service';
@@ -12,10 +11,15 @@ import { FormsModule } from '@angular/forms';
 })
 export class HistorialComponent implements OnInit {
 
-  ventas: any[] = [];
+  ventas: any[] = [];            // datos originales
+  ventasFiltradas: any[] = [];   // datos que se muestran
   detalle: any[] = [];
+
   mostrandoDetalle = false;
   ventaSeleccionada: any = null;
+
+  filtroNombre: string = '';
+  filtroFecha: string = '';
 
   loading = true;
 
@@ -26,12 +30,59 @@ export class HistorialComponent implements OnInit {
   }
 
   // ============================
-  // CARGAR VENTAS
+  // CARGAR TODAS LAS VENTAS
   // ============================
   async cargarVentas() {
     this.loading = true;
-    this.ventas = await this.ventasService.getVentas();
+
+    const data = await this.ventasService.getVentas();
+
+    // Asegurar array válido
+    this.ventas = Array.isArray(data) ? data : [];
+    this.ventasFiltradas = [...this.ventas];
+
     this.loading = false;
+  }
+
+  // ============================
+  // FILTRO POR NOMBRE
+  // ============================
+  filtrarPorNombre() {
+    const nombre = this.filtroNombre.toLowerCase().trim();
+
+    if (!nombre) {
+      this.ventasFiltradas = [...this.ventas];
+      return;
+    }
+
+    this.ventasFiltradas = this.ventas.filter(v =>
+      v.clientes?.nombre?.toLowerCase().includes(nombre)
+    );
+  }
+
+  // ============================
+  // FILTRO POR FECHA
+  // ============================
+  filtrarPorFecha() {
+    const fecha = this.filtroFecha.trim();
+
+    if (!fecha) {
+      this.ventasFiltradas = [...this.ventas];
+      return;
+    }
+
+    this.ventasFiltradas = this.ventas.filter(v =>
+      v.fecha?.substring(0, 10) === fecha
+    );
+  }
+
+  // ============================
+  // LIMPIAR TODOS LOS FILTROS
+  // ============================
+  limpiarFiltros() {
+    this.filtroNombre = '';
+    this.filtroFecha = '';
+    this.ventasFiltradas = [...this.ventas];
   }
 
   // ============================
