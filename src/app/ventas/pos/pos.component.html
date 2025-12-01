@@ -1,10 +1,13 @@
 <div class="w-full max-w-[1200px] mx-auto flex flex-col px-2 md:px-3 pb-2">
-  
+
+  <!-- TITULO -->
   <header class="flex items-start justify-between gap-4 px-0 py-3 pb-2 bg-transparent border-none shadow-none">
     <div class="flex-1">
       <div class="flex items-center gap-3">
         <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z">
+          </path>
         </svg>
         <div>
           <h1 class="m-0 text-2xl font-semibold text-gray-900 tracking-wide">Punto de Venta (POS)</h1>
@@ -14,26 +17,26 @@
     </div>
   </header>
 
-  
+  <!-- DATOS DE VENTA -->
   <div class="flex items-center justify-between px-0 py-1.5 mb-1.5 border-b border-gray-200">
     <div class="flex items-center text-gray-900 text-xs font-semibold uppercase gap-2">
       <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+        </path>
       </svg>
       <span>DATOS DE VENTA</span>
     </div>
   </div>
 
-  
   <section class="px-0 pb-3">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-      <div class="mb-0">
+
+      <!-- Cliente -->
+      <div>
         <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Cliente</label>
-        <select
-          [(ngModel)]="venta.id_cliente"
-          name="id_cliente"
-          class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
-        >
+        <select [(ngModel)]="venta.id_cliente" name="id_cliente"
+                class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900">
           <option [value]="0">Seleccione cliente</option>
           <option *ngFor="let c of clientes" [value]="c.id_cliente">
             {{ c.nombre }}
@@ -41,149 +44,137 @@
         </select>
       </div>
 
-      <div class="mb-0">
+      <!-- Comprobante -->
+      <div>
         <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Comprobante</label>
-        <select
-          [(ngModel)]="venta.tipo_comprobante"
-          name="tipo_comprobante"
-          class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
-        >
+        <select [(ngModel)]="venta.tipo_comprobante" name="tipo_comprobante"
+                class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900">
           <option>Boleta</option>
           <option>Factura</option>
+          <option>No desea</option>
         </select>
       </div>
 
-      <div class="mb-0">
+      <!-- N° Comprobante -->
+      <div>
         <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">N° Comprobante</label>
-        <input
-          type="text"
-          [(ngModel)]="venta.nro_comprobante"
-          name="nro_comprobante"
-          class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
-          placeholder="Ej: B001-000123"
-        />
+        <input type="text" [(ngModel)]="venta.nro_comprobante" name="nro_comprobante"
+               class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900"
+               placeholder="Ej: B001-000123" />
       </div>
 
-      <div class="mb-0">
+      <!-- Método pago -->
+      <div>
         <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Método de pago</label>
-        <select
-          [(ngModel)]="venta.metodo_pago"
-          name="metodo_pago"
-          class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
-        >
+        <select [(ngModel)]="venta.metodo_pago" name="metodo_pago"
+                class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900">
           <option>Efectivo</option>
           <option>Tarjeta</option>
           <option>Transferencia</option>
+          <option>Yape</option>
+          <option>Plin</option>
         </select>
       </div>
+
     </div>
   </section>
 
-  
+  <!-- AGREGAR PRODUCTO -->
   <div class="flex items-center justify-between px-0 py-1.5 mb-1.5 border-b border-gray-200">
     <div class="flex items-center text-gray-900 text-xs font-semibold uppercase gap-2">
       <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 4v16m8-8H4"></path>
       </svg>
       <span>AGREGAR PRODUCTO</span>
     </div>
   </div>
 
-  
+  <!-- FORM AGREGAR PRODUCTO -->
   <section class="px-0 pb-3">
-    <div class="flex flex-wrap gap-2 p-3 border border-gray-200 rounded-lg bg-white">
-      <select
-        [(ngModel)]="formProducto.id_producto"
-        class="flex-1 min-w-[220px] px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
-      >
-        <option [value]="0">Producto</option>
-        <option *ngFor="let p of productos" [value]="p.id_producto">
-          {{ p.nombre }} — S/. {{ p.precio_unitario }}
-        </option>
-      </select>
+    <div class="flex flex-col w-full p-3 border border-gray-200 rounded-lg bg-white">
 
-      <input
-        type="number"
-        [(ngModel)]="formProducto.cantidad"
-        min="1"
-        placeholder="Cantidad"
-        class="w-[130px] px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
-      />
+      <div class="grid grid-cols-12 gap-2 mb-1 text-xs font-semibold text-gray-600 px-1">
+        <div class="col-span-6">Producto</div>
+        <div class="col-span-2 text-center">Cantidad</div>
+        <div class="col-span-2 text-center">Descuento (S/.)</div>
+        <div class="col-span-2"></div>
+      </div>
 
-      <input
-        type="number"
-        [(ngModel)]="formProducto.descuento"
-        min="0"
-        step="0.01"
-        placeholder="Descuento"
-        class="w-[140px] px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
-      />
+      <div class="grid grid-cols-12 gap-2">
+        <div class="col-span-6">
+          <select class="form-select w-full" [(ngModel)]="formProducto.id_producto">
+            <option value="0">Producto</option>
+            <option *ngFor="let p of productos" [value]="p.id_producto">
+              {{ p.nombre }} – S/. {{ p.precio_unitario }}
+            </option>
+          </select>
+        </div>
 
-      <button
-        type="button"
-        (click)="agregarProducto()"
-        class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-lg cursor-pointer font-medium text-sm transition-all hover:-translate-y-0.5 hover:bg-blue-700 hover:border-blue-700 hover:shadow-md"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-        </svg>
-        <span>Agregar</span>
-      </button>
+        <div class="col-span-2">
+          <input type="number" class="form-input w-full text-center"
+                 [(ngModel)]="formProducto.cantidad" min="1" />
+        </div>
+
+        <div class="col-span-2">
+          <input type="number" class="form-input w-full text-center"
+                 [(ngModel)]="formProducto.descuento" min="0" step="0.1" />
+        </div>
+
+        <div class="col-span-2 flex items-center">
+          <button class="btn-primary w-full flex items-center justify-center gap-2"
+                  (click)="agregarProducto()">
+            <span>+</span> Agregar
+          </button>
+        </div>
+      </div>
     </div>
   </section>
 
-  
+  <!-- CARRITO -->
   <div class="flex items-center justify-between px-0 py-1.5 mb-1.5 border-b border-gray-200">
     <div class="flex items-center text-gray-900 text-xs font-semibold uppercase gap-2">
       <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
       </svg>
       <span>CARRITO</span>
     </div>
-    <div class="flex items-center gap-2">
-      <div class="text-right">
-        <div class="text-xs text-gray-600">Total</div>
-        <div class="text-lg font-semibold text-orange-600">
-          S/. {{ (venta.total || 0).toFixed(2) }}
-        </div>
+
+    <div class="text-right">
+      <div class="text-xs text-gray-600">Total</div>
+      <div class="text-lg font-semibold text-orange-600">
+        S/. {{ (venta.total || 0).toFixed(2) }}
       </div>
     </div>
   </div>
 
-  
+  <!-- TABLA CARRITO -->
   <section class="rounded-none border-none bg-transparent overflow-auto shadow-none px-0 pb-2">
     <table class="w-full border-collapse min-w-[860px]" *ngIf="carrito.length; else sinCarrito">
       <thead>
         <tr>
-          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Producto</th>
-          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Cant.</th>
-          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Precio</th>
-          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Desc.</th>
-          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Subtotal</th>
-          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">Acciones</th>
+          <th class="text-left text-xs uppercase text-gray-600 py-3.5 px-4 border-b">Producto</th>
+          <th class="text-left text-xs uppercase text-gray-600 py-3.5 px-4 border-b">Cant.</th>
+          <th class="text-left text-xs uppercase text-gray-600 py-3.5 px-4 border-b">Precio</th>
+          <th class="text-left text-xs uppercase text-gray-600 py-3.5 px-4 border-b">Desc.</th>
+          <th class="text-left text-xs uppercase text-gray-600 py-3.5 px-4 border-b">Subtotal</th>
+          <th class="text-left text-xs uppercase text-gray-600 py-3.5 px-4 border-b">Acciones</th>
         </tr>
       </thead>
+
       <tbody>
-        <tr *ngFor="let d of carrito; let i = index" class="hover:bg-blue-50 transition-colors">
-          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-900 text-sm font-semibold">{{ getNombreProducto(d.id_producto) }}</td>
-          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-600 text-sm">{{ d.cantidad }}</td>
-          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-600 text-sm">S/. {{ d.precio_unitario }}</td>
-          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-600 text-sm">S/. {{ d.descuento || 0 }}</td>
-          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-900 text-sm font-semibold">S/. {{ d.subtotal }}</td>
-          <td class="py-4 px-4 border-b border-gray-100 align-middle">
-            <div class="flex gap-2.5 justify-end">
-              <button
-                type="button"
-                (click)="eliminar(i)"
-                class="border border-red-300 bg-red-50 text-red-700 rounded-lg px-3.5 py-2 cursor-pointer inline-flex items-center gap-2 transition-all hover:-translate-y-0.5 hover:bg-red-100 hover:border-red-400 hover:shadow text-xs font-medium whitespace-nowrap"
-                title="Eliminar"
-              >
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                </svg>
-                <span>Eliminar</span>
-              </button>
-            </div>
+        <tr *ngFor="let d of carrito; let i = index" class="hover:bg-blue-50 transition">
+          <td class="py-4 px-4 border-b">{{ getNombreProducto(d.id_producto) }}</td>
+          <td class="py-4 px-4 border-b">{{ d.cantidad }}</td>
+          <td class="py-4 px-4 border-b">S/. {{ d.precio_unitario }}</td>
+          <td class="py-4 px-4 border-b">S/. {{ d.descuento || 0 }}</td>
+          <td class="py-4 px-4 border-b">S/. {{ d.subtotal }}</td>
+          <td class="py-4 px-4 border-b">
+            <button type="button" (click)="eliminar(i)"
+                    class="border border-red-300 bg-red-50 text-red-700 rounded-lg px-3 py-2 text-xs">
+              Eliminar
+            </button>
           </td>
         </tr>
       </tbody>
@@ -191,36 +182,70 @@
 
     <ng-template #sinCarrito>
       <div class="py-10 px-6 text-center text-gray-600 border border-dashed border-gray-300 rounded-lg bg-white">
-        <svg class="w-10 h-10 mx-auto mb-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
-        </svg>
         <h3 class="m-0 mb-2 text-gray-900 font-semibold">Carrito vacío</h3>
-        <p class="m-0 text-gray-600">Agrega productos para comenzar la venta.</p>
+        <p>Agrega productos para comenzar la venta.</p>
       </div>
     </ng-template>
   </section>
 
-  
+  <!-- IGV / SUNAT -->
+  <div class="w-full md:w-96 ml-auto mt-4 p-4 rounded-lg border border-gray-200 bg-white shadow-sm">
+
+    <!-- Selector IGV -->
+    <div class="mb-3">
+      <label class="block text-sm font-medium text-gray-700">¿Aplicar IGV (18%)?</label>
+
+      <select class="mt-1 w-full px-3 py-2 border rounded-lg bg-gray-50"
+              [(ngModel)]="incluirIGV"
+              (change)="calcularTotal()">
+        <option [ngValue]="false">No</option>
+        <option [ngValue]="true">Sí</option>
+      </select>
+
+      <!-- Advertencia -->
+      <div *ngIf="incluirIGV && venta.tipo_comprobante === 'No desea'"
+           class="mt-2 p-2 bg-red-50 text-red-700 border border-red-300 rounded-lg text-xs">
+        No se puede aplicar IGV cuando el comprobante es <strong>"No desea"</strong>.
+      </div>
+    </div>
+
+    <!-- Resumen SUNAT -->
+    <div class="space-y-2 pt-2 border-t border-gray-200">
+      <div class="flex justify-between text-sm text-gray-600">
+        <span>Base Imponible</span>
+        <span>S/. {{ (base_imponible || 0).toFixed(2) }}</span>
+      </div>
+
+      <div class="flex justify-between text-sm text-gray-600">
+        <span>IGV (18%)</span>
+        <span>S/. {{ (igv || 0).toFixed(2) }}</span>
+      </div>
+
+      <div class="flex justify-between text-lg font-semibold text-gray-900 pt-2 border-t">
+        <span>Total</span>
+        <span class="text-orange-600">S/. {{ (venta.total || 0).toFixed(2) }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTONES -->
   <div class="flex justify-end gap-2 mt-3">
-    <button
-      type="button"
-      (click)="limpiarVenta()"
-      class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-900 rounded-lg cursor-pointer font-medium text-sm transition-all hover:-translate-y-0.5 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md"
-    >
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-      </svg>
-      <span>Limpiar</span>
+
+    <button (click)="limpiarVenta()"
+            class="px-4 py-2 bg-white border border-gray-300 rounded-lg">
+      Limpiar
     </button>
-    <button
-      type="button"
-      (click)="procesarVenta()"
-      class="inline-flex items-center gap-2 px-6 py-2.5 bg-orange-600 text-white border border-orange-600 rounded-lg cursor-pointer font-medium text-sm transition-all hover:-translate-y-0.5 hover:bg-orange-700 hover:border-orange-700 hover:shadow-md"
-    >
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-      </svg>
-      <span>Procesar Venta</span>
+
+    <button (click)="procesarVenta()"
+            class="px-6 py-2.5 bg-orange-600 text-white rounded-lg">
+      Procesar Venta
     </button>
+
+    <button class="bg-blue-500 text-white px-4 py-2 rounded"
+            (click)="generarComprobantePDF()"
+            [disabled]="venta.tipo_comprobante === 'No desea'">
+      Generar Comprobante
+    </button>
+
   </div>
 </div>
