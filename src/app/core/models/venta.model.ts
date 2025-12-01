@@ -6,4 +6,9 @@ export interface Venta {
   nro_comprobante?: string;
   metodo_pago?: string;
   total: number;
+
+  base_imponible: number;
+  igv: number;
+
+  
 }
