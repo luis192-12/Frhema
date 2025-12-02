@@ -9,4 +9,6 @@ export interface Usuario {
 
   // cuando hagamos join con roles
   rol?: Rol | null;
+   // ⭐ NUEVO
+  esSuperadmin?: boolean;
 }
