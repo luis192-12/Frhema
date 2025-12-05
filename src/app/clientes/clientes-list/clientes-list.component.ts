@@ -120,4 +120,16 @@ export class ClientesListComponent implements OnInit {
       alert('Error al eliminar');
     }
   }
+  sanitizarDocumento() {
+  this.cliente.documento = (this.cliente.documento ?? '')
+    .replace(/[^0-9]/g, '')
+    .slice(0, 7);
+}
+
+sanitizarTelefono() {
+  this.cliente.telefono = (this.cliente.telefono ?? '')
+    .replace(/[^0-9]/g, '')
+    .slice(0, 9);
+}
+
 }

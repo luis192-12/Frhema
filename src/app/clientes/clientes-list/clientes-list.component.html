@@ -190,22 +190,37 @@
 
         <div class="mb-0">
           <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Documento</label>
-          <input
-            type="text"
-            [(ngModel)]="cliente.documento"
-            name="documento"
-            class="w-full px-2.5 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-3 focus:ring-blue-100 hover:border-gray-400"
-          />
+<input
+  type="text"
+  maxlength="7"
+  [(ngModel)]="cliente.documento"
+  name="documento"
+  (input)="sanitizarDocumento()"
+  class="w-full px-2.5 py-2.5 rounded-lg border border-gray-300 bg-gray-50"
+/>
+
+
+
+
+
+
         </div>
 
         <div class="mb-0">
           <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Teléfono</label>
-          <input
-            type="text"
-            [(ngModel)]="cliente.telefono"
-            name="telefono"
-            class="w-full px-2.5 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-3 focus:ring-blue-100 hover:border-gray-400"
-          />
+<input
+  type="text"
+  maxlength="9"
+  [(ngModel)]="cliente.telefono"
+  name="telefono"
+  (input)="sanitizarTelefono()"
+  class="w-full px-2.5 py-2.5 rounded-lg border border-gray-300 bg-gray-50"
+/>
+
+
+
+
+
         </div>
 
         <div class="mb-0 col-span-2">
