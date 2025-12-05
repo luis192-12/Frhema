@@ -39,6 +39,7 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
+              "baseHref": "/Frhema/",
               "budgets": [
                 {
                   "type": "initial",

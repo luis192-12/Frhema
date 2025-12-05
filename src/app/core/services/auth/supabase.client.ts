@@ -12,7 +12,25 @@ export class SupabaseClientService {
   constructor() {
     this.supabase = createClient(
       environment.supabaseUrl,
-      environment.supabaseAnonKey
+      environment.supabaseAnonKey,
+      {
+        auth: {
+          // Deshabilitar el uso de Navigator LockManager para evitar conflictos
+          // Esto previene el error "Acquiring an exclusive Navigator LockManager lock"
+          storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+          autoRefreshToken: true,
+          persistSession: true,
+          detectSessionInUrl: true,
+          // Configuración para evitar locks conflictivos
+          flowType: 'pkce'
+        },
+        // Configuración global para evitar problemas de locks
+        global: {
+          headers: {
+            'x-client-info': 'angular-client'
+          }
+        }
+      }
     );
   }
 

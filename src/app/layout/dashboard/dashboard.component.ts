@@ -15,16 +15,19 @@ import { Producto } from '../../core/models/producto.model';
 })
 export class DashboardComponent implements OnInit {
   
-  // Métricas principales
+  // Rol del usuario actual
+  rol: number = Number(localStorage.getItem('rol')) || 0;
+  
+  // Métricas principales (solo para roles que pueden ver ventas: 1, 2, 5)
   ventasHoy: number = 0;
   montoHoy: number = 0;
   ventasMes: number = 0;
   montoMes: number = 0;
 
-  // Ventas recientes
+  // Ventas recientes (solo para roles que pueden ver ventas: 1, 2, 5)
   ventasRecientes: any[] = [];
 
-  // Productos con stock crítico
+  // Productos con stock crítico (todos los roles pueden ver)
   productosStockCritico: Producto[] = [];
 
   loading = true;
@@ -42,16 +45,21 @@ export class DashboardComponent implements OnInit {
     try {
       this.loading = true;
 
-      // Cargar métricas principales
-      this.ventasHoy = await this.ventasService.getVentasHoyCount();
-      this.montoHoy = await this.ventasService.getMontoHoy();
-      this.ventasMes = await this.ventasService.getVentasMesCount();
-      this.montoMes = await this.ventasService.getMontoMes();
+      // Solo cargar datos de ventas si el rol tiene permiso (1=Admin, 2=Cajero, 5=Gerente)
+      const puedeVerVentas = this.rol === 1 || this.rol === 2 || this.rol === 5;
+      
+      if (puedeVerVentas) {
+        // Cargar métricas principales de ventas
+        this.ventasHoy = await this.ventasService.getVentasHoyCount();
+        this.montoHoy = await this.ventasService.getMontoHoy();
+        this.ventasMes = await this.ventasService.getVentasMesCount();
+        this.montoMes = await this.ventasService.getMontoMes();
 
-      // Cargar ventas recientes
-      this.ventasRecientes = await this.ventasService.getVentasRecientes();
+        // Cargar ventas recientes
+        this.ventasRecientes = await this.ventasService.getVentasRecientes();
+      }
 
-      // Cargar productos con stock crítico
+      // Cargar productos con stock crítico (todos los roles pueden ver)
       this.productosStockCritico = await this.productosService.getProductosStockCritico(3);
 
     } catch (error) {
@@ -59,6 +67,31 @@ export class DashboardComponent implements OnInit {
     } finally {
       this.loading = false;
     }
+  }
+
+  // Verificar si el rol puede ver información de ventas
+  puedeVerVentas(): boolean {
+    return this.rol === 1 || this.rol === 2 || this.rol === 5;
+  }
+
+  // Verificar si el rol puede ver productos
+  puedeVerProductos(): boolean {
+    return this.rol === 1 || this.rol === 3;
+  }
+
+  // Verificar si el rol puede ver POS
+  puedeVerPOS(): boolean {
+    return this.rol === 1 || this.rol === 2;
+  }
+
+  // Verificar si el rol puede ver clientes
+  puedeVerClientes(): boolean {
+    return this.rol === 1 || this.rol === 2 || this.rol === 5;
+  }
+
+  // Verificar si el rol puede ver compras
+  puedeVerCompras(): boolean {
+    return this.rol === 1 || this.rol === 4;
   }
 
   // Formatear fecha

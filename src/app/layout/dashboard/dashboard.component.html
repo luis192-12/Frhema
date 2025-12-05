@@ -15,7 +15,8 @@
   </header>
 
   
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+  <!-- Métricas principales (solo para roles que pueden ver ventas) -->
+  <div *ngIf="puedeVerVentas()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
     
     <div class="group bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
       <div class="p-4">
@@ -99,8 +100,11 @@
     </div>
   </div>
 
+  <!-- Accesos rápidos (filtrados por rol) -->
   <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
+    <!-- Productos (Rol 1, 3) -->
     <a
+      *ngIf="puedeVerProductos()"
       routerLink="/dashboard/productos"
       class="group relative bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all p-4 flex flex-col items-center text-center focus:outline-none focus:ring-2 focus:ring-blue-400"
     >
@@ -116,7 +120,9 @@
       <span class="text-xs text-gray-500 mt-1">Inventario</span>
     </a>
 
+    <!-- POS (Rol 1, 2) -->
     <a
+      *ngIf="puedeVerPOS()"
       routerLink="/dashboard/pos"
       class="group bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all p-4 flex flex-col items-center text-center focus:outline-none focus:ring-2 focus:ring-blue-400"
     >
@@ -129,7 +135,9 @@
       <span class="text-xs text-gray-500 mt-1">Ventas</span>
     </a>
 
+    <!-- Ventas Historial (Rol 1, 2) -->
     <a
+      *ngIf="puedeVerPOS()"
       routerLink="/dashboard/ventas"
       class="group bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all p-4 flex flex-col items-center text-center focus:outline-none focus:ring-2 focus:ring-blue-400"
     >
@@ -142,7 +150,9 @@
       <span class="text-xs text-gray-500 mt-1">Historial</span>
     </a>
 
+    <!-- Clientes (Rol 1, 2, 5) -->
     <a
+      *ngIf="puedeVerClientes()"
       routerLink="/dashboard/clientes"
       class="group bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all p-4 flex flex-col items-center text-center focus:outline-none focus:ring-2 focus:ring-blue-400"
     >
@@ -154,23 +164,37 @@
       <h3 class="font-semibold text-gray-900 text-sm leading-tight">Clientes</h3>
       <span class="text-xs text-gray-500 mt-1">Gestión</span>
     </a>
+
+    <!-- Compras (Rol 1, 4) -->
+    <a
+      *ngIf="puedeVerCompras()"
+      routerLink="/dashboard/compras"
+      class="group bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all p-4 flex flex-col items-center text-center focus:outline-none focus:ring-2 focus:ring-blue-400"
+    >
+      <div class="p-2.5 rounded-lg bg-purple-50 text-purple-600 mb-2 group-hover:scale-[1.03] transition-transform">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+        </svg>
+      </div>
+      <h3 class="font-semibold text-gray-900 text-sm leading-tight">Compras</h3>
+      <span class="text-xs text-gray-500 mt-1">Registro</span>
+    </a>
   </div>
 
   
-  <div class="flex items-center justify-between px-0 py-1.5 mb-1.5 border-b border-gray-200">
-    <div class="flex items-center text-gray-900 text-xs font-semibold uppercase gap-2">
-      <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-      </svg>
-      <span>VENTAS RECIENTES</span>
-    </div>
-  </div>
-
   <!-- Contenido en dos columnas: Ventas Recientes (izquierda) y Stock Crítico (derecha) -->
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 mb-3">
     
-    <!-- Columna izquierda: Ventas Recientes (8 columnas) -->
-    <div class="lg:col-span-8">
+    <!-- Columna izquierda: Ventas Recientes (8 columnas) - Solo para roles que pueden ver ventas -->
+    <div *ngIf="puedeVerVentas()" class="lg:col-span-8">
+      <div class="flex items-center justify-between px-0 py-1.5 mb-1.5 border-b border-gray-200">
+        <div class="flex items-center text-gray-900 text-xs font-semibold uppercase gap-2">
+          <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+          </svg>
+          <span>VENTAS RECIENTES</span>
+        </div>
+      </div>
       <section class="rounded-none border-none bg-transparent overflow-auto shadow-none px-0 pb-2">
         <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
           <div class="overflow-x-auto">
@@ -227,8 +251,8 @@
       </section>
     </div>
 
-    <!-- Columna derecha: Productos con Stock Crítico (4 columnas) -->
-    <div class="lg:col-span-4">
+    <!-- Columna derecha: Productos con Stock Crítico (4 columnas) - Todos los roles pueden ver -->
+    <div [class]="puedeVerVentas() ? 'lg:col-span-4' : 'lg:col-span-12'">
       <div class="flex items-center justify-between px-0 py-1.5 mb-1.5 border-b border-gray-200">
         <div class="flex items-center text-gray-900 text-xs font-semibold uppercase gap-2">
           <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
