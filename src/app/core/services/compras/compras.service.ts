@@ -57,14 +57,22 @@ export class ComprasService {
   async registrarCompra(compra: Compra, detalles: DetalleCompra[]) {
 
     // 1️⃣ Insertar la compra
+    const compraDataToInsert: any = {
+      id_proveedor: compra.id_proveedor,
+      id_usuario: compra.id_usuario,
+      nro_documento: compra.nro_documento,
+      total: compra.total
+    };
+
+    // Si hay fecha personalizada, convertirla al formato correcto
+    if (compra.fecha) {
+      // Convertir de datetime-local (YYYY-MM-DDTHH:mm) a ISO string para PostgreSQL
+      compraDataToInsert.fecha = new Date(compra.fecha).toISOString();
+    }
+
     const { data: compraData, error: compraError } = await this.supabase.client
       .from(this.TABLE)
-      .insert({
-        id_proveedor: compra.id_proveedor,
-        id_usuario: compra.id_usuario,
-        nro_documento: compra.nro_documento,
-        total: compra.total
-      })
+      .insert(compraDataToInsert)
       .select("id_compra")
       .single();
 

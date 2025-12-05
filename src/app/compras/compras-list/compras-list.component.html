@@ -1,294 +1,655 @@
-<div class="w-full max-w-[1200px] mx-auto flex flex-col px-2 md:px-3 pb-2">
-  
-  <header class="flex items-start justify-between gap-4 px-0 pt-0 pb-2 bg-transparent border-none shadow-none">
-    <div class="flex-1">
-      <div class="flex items-center gap-3">
-        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M9 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M7 7h10M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
-        </svg>
-        <div>
-          <h1 class="m-0 text-2xl font-semibold text-gray-900 tracking-wide">Registro de Compras</h1>
-          <p class="mt-1 mb-0 text-sm text-gray-600">Registra compras, agrega detalle y revisa el historial.</p>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  
-  <div class="flex items-center justify-between px-0 py-1.5 mb-2 border-b border-gray-200">
-    <div class="flex items-center text-gray-900 text-xs font-semibold uppercase gap-2">
-      <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<div class="p-4 md:p-6 space-y-6">
+  <!-- HEADER -->
+  <div>
+    <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+      <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          d="M9 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M7 7h10M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
       </svg>
-      <span>NUEVA COMPRA</span>
-    </div>
-
-    <div class="flex items-center gap-2">
-      <button
-        type="button"
-        (click)="limpiarFormulario()"
-        class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-900 rounded-lg cursor-pointer font-medium text-sm transition-all hover:-translate-y-0.5 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md"
-        title="Limpiar formulario"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-        <span>Limpiar</span>
-      </button>
-      <button
-        type="button"
-        (click)="guardarCompra()"
-        class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-lg cursor-pointer font-medium text-sm transition-all hover:-translate-y-0.5 hover:bg-blue-700 hover:border-blue-700 hover:shadow-md"
-        title="Guardar compra"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-        </svg>
-        <span>Guardar</span>
-      </button>
-    </div>
+      Registrar Compra de Insumos
+    </h1>
+    <p class="text-gray-600 mt-1">Registra una nueva compra de insumos para tu tienda.</p>
   </div>
 
-  
-  <section class="px-0 pb-3">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-      <div class="mb-0">
-        <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">Proveedor</label>
-        <select
-          [(ngModel)]="compra.id_proveedor"
-          name="id_proveedor"
-          class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
-        >
-          <option value="0">Seleccione proveedor</option>
-          <option *ngFor="let p of proveedores" [value]="p.id_proveedor">
-            {{ p.nombre }}
-          </option>
-        </select>
-      </div>
+  <!-- FORMULARIO DE COMPRA -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
+    <form class="flex flex-col md:flex-row gap-6">
+      <!-- COLUMNA IZQUIERDA: DATOS GENERALES -->
+      <div class="w-full md:w-4/12 space-y-4">
+        <div class="bg-white p-4 rounded-lg border border-gray-200">
+          <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4 flex items-center gap-2">
+            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Datos Generales
+          </h3>
 
-      <div class="mb-0">
-        <label class="block mb-2 text-gray-900 text-sm font-medium leading-6">N° Documento</label>
-        <input
-          type="text"
-          [(ngModel)]="compra.nro_documento"
-          name="nro_documento"
-          class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all box-border focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
-          placeholder="Ej: F001-000123"
-        />
-      </div>
-    </div>
-  </section>
-
-  
-  <div class="flex items-center justify-between px-0 py-1.5 mb-2 border-b border-gray-200">
-    <div class="flex items-center text-gray-900 text-xs font-semibold uppercase gap-2">
-      <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-      </svg>
-      <span>DETALLE DE COMPRA</span>
-    </div>
-
-    <div class="flex items-center gap-2">
-      <div class="text-right">
-        <div class="text-xs text-gray-600">Total</div>
-        <div class="text-lg font-semibold text-gray-900">
-          S/. {{ (compra.total || 0).toFixed(2) }}
-        </div>
-      </div>
-    </div>
-  </div>
-
-  
-  <section class="px-0 pb-3">
-    <div class="flex flex-wrap gap-2 p-3 border border-gray-200 rounded-lg bg-white">
-      <select
-        [(ngModel)]="nuevoDetalle.id_producto"
-        class="flex-1 min-w-[220px] px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
-      >
-        <option value="0">Producto</option>
-        <option *ngFor="let p of productos" [value]="p.id_producto">
-          {{ p.nombre }}
-        </option>
-      </select>
-
-      <input
-        type="number"
-        [(ngModel)]="nuevoDetalle.cantidad"
-        min="1"
-        placeholder="Cantidad"
-        class="w-[130px] px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
-      />
-
-      <input
-        type="number"
-        [(ngModel)]="nuevoDetalle.costo_unitario"
-        min="0"
-        step="0.01"
-        placeholder="Costo"
-        class="w-[140px] px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm transition-all focus:border-blue-600 focus:bg-white focus:ring-1 focus:ring-blue-200 hover:border-gray-400"
-      />
-
-      <button
-        type="button"
-        (click)="agregarDetalle()"
-        class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-lg cursor-pointer font-medium text-sm transition-all hover:-translate-y-0.5 hover:bg-blue-700 hover:border-blue-700 hover:shadow-md"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        <span>Agregar</span>
-      </button>
-    </div>
-  </section>
-
-  
-  <section class="rounded-none border-none bg-transparent overflow-auto shadow-none px-0 pb-2">
-    <table class="w-full border-collapse min-w-[860px]" *ngIf="detalles?.length; else sinDetalles">
-      <thead>
-        <tr>
-          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">
-            Producto
-          </th>
-          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">
-            Cant.
-          </th>
-          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">
-            Costo
-          </th>
-          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">
-            Subtotal
-          </th>
-          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">
-            Acciones
-          </th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <tr *ngFor="let d of detalles; let i = index" class="hover:bg-blue-50 transition-colors">
-          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-900 text-sm">
-            <div class="font-semibold text-gray-900 tracking-wide leading-snug">
-              {{ getNombreProducto(d.id_producto) }}
+          <!-- PROVEEDOR -->
+          <div class="mb-4">
+            <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Proveedor <span class="text-red-500">*</span>
+            </label>
+            <div class="grid grid-cols-10 gap-2">
+              <div class="col-span-9">
+                <select
+                  [(ngModel)]="compra.id_proveedor"
+                  name="id_proveedor"
+                  class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 outline-none text-sm transition-all focus:border-blue-600 focus:ring-1 focus:ring-blue-200"
+                >
+                  <option value="0">Seleccionar proveedor...</option>
+                  <option *ngFor="let p of proveedores" [value]="p.id_proveedor">
+                    {{ p.nombre }}
+                  </option>
+                </select>
+              </div>
+              <div class="col-span-1 flex justify-center items-center">
+                <button
+                  type="button"
+                  (click)="abrirModalNuevoProveedor()"
+                  class="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition-colors"
+                  title="Añadir Proveedor"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                  </svg>
+                </button>
+              </div>
             </div>
-          </td>
+          </div>
 
-          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-600 text-sm">
-            {{ d.cantidad }}
-          </td>
+          <!-- FECHA -->
+          <div class="mb-4">
+            <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Fecha <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="datetime-local"
+              [(ngModel)]="compra.fecha"
+              name="fecha"
+              class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
+            />
+          </div>
 
-          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-600 text-sm">
-            S/. {{ d.costo_unitario }}
-          </td>
+          <!-- N° DOCUMENTO -->
+          <div class="mb-4">
+            <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+              N° Documento
+            </label>
+            <input
+              type="text"
+              [(ngModel)]="compra.nro_documento"
+              name="nro_documento"
+              placeholder="Ej: F001-000123"
+              class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 outline-none text-sm transition-all focus:border-blue-600 focus:ring-1 focus:ring-blue-200"
+            />
+          </div>
 
-          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-900 text-sm font-semibold">
-            S/. {{ d.subtotal }}
-          </td>
+          <!-- BOTONES -->
+          <div class="flex flex-col gap-2 mt-6 pt-4 border-t border-gray-200">
+            <button
+              type="button"
+              (click)="guardarCompra()"
+              class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-semibold shadow-sm"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Registrar Compra
+            </button>
+            <button
+              type="button"
+              (click)="limpiarFormulario()"
+              class="w-full px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-colors text-sm font-medium"
+            >
+              Limpiar Formulario
+            </button>
+          </div>
+        </div>
+      </div>
 
-          <td class="py-4 px-4 border-b border-gray-100 align-middle">
-            <div class="flex gap-2.5 justify-end">
+      <!-- COLUMNA DERECHA: DETALLES DE COMPRA -->
+      <div class="w-full md:w-8/12 space-y-4">
+        <div class="bg-white p-4 rounded-lg border border-gray-200">
+          <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4 flex items-center gap-2">
+            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+            </svg>
+            Detalles de Compra
+          </h3>
+
+          <!-- BUSCAR PRODUCTO -->
+          <div class="mb-4">
+            <label class="block mb-1 text-sm font-medium text-gray-700">
+              Buscar Producto <span class="text-red-500">*</span>
+            </label>
+            <div class="flex gap-2">
+              <select
+                [(ngModel)]="nuevoDetalle.id_producto"
+                name="id_producto"
+                class="flex-1 px-3 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 outline-none text-sm transition-all focus:border-blue-600 focus:ring-1 focus:ring-blue-200"
+              >
+                <option value="0">Seleccionar producto...</option>
+                <option *ngFor="let p of productos" [value]="p.id_producto">
+                  {{ p.nombre }} - {{ p.unidad_medida }} (Stock: {{ p.stock_actual || 0 }})
+                </option>
+              </select>
               <button
                 type="button"
-                (click)="eliminarDetalle(i)"
-                class="border border-red-300 bg-red-50 text-red-700 rounded-lg px-3.5 py-2 cursor-pointer inline-flex items-center gap-2 transition-all hover:-translate-y-0.5 hover:bg-red-100 hover:border-red-400 hover:shadow text-xs font-medium whitespace-nowrap"
-                title="Eliminar"
+                (click)="abrirModalNuevoProducto()"
+                class="inline-flex items-center justify-center gap-1 px-3 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+                title="Crear nuevo producto"
               >
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
-                <span>Eliminar</span>
+                <span class="hidden md:inline">Nuevo</span>
               </button>
             </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          </div>
 
-    <ng-template #sinDetalles>
-      <div class="py-10 px-6 text-center text-gray-600 border border-dashed border-gray-300 rounded-lg bg-white">
-        <svg class="w-10 h-10 mx-auto mb-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-        </svg>
-        <h3 class="m-0 mb-2 text-gray-900 font-semibold">Sin detalle agregado</h3>
-        <p class="m-0 text-gray-600">Agrega productos para construir la compra.</p>
+          <!-- CAMPOS CANTIDAD Y COSTO -->
+          <div class="grid grid-cols-3 gap-2 mb-4">
+            <div>
+              <label class="block mb-1 text-sm font-medium text-gray-700">Cantidad</label>
+              <input
+                type="number"
+                [(ngModel)]="nuevoDetalle.cantidad"
+                name="cantidad"
+                min="1"
+                placeholder="Cantidad"
+                class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 outline-none text-sm transition-all focus:border-blue-600 focus:ring-1 focus:ring-blue-200"
+              />
+            </div>
+            <div>
+              <label class="block mb-1 text-sm font-medium text-gray-700">P. Unitario</label>
+              <input
+                type="number"
+                [(ngModel)]="nuevoDetalle.costo_unitario"
+                name="costo_unitario"
+                min="0"
+                step="0.01"
+                placeholder="Costo"
+                class="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 outline-none text-sm transition-all focus:border-blue-600 focus:ring-1 focus:ring-blue-200"
+              />
+            </div>
+            <div class="flex items-end">
+              <button
+                type="button"
+                (click)="agregarDetalle()"
+                class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm transition-colors shadow-sm"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Agregar
+              </button>
+            </div>
+          </div>
+
+          <!-- TABLA DE DETALLES -->
+          <div class="mb-4 overflow-x-auto overflow-y-auto max-h-[35vh]">
+            <table class="w-full border-collapse">
+              <thead class="bg-gray-100">
+                <tr class="text-xs font-semibold tracking-wide text-left text-gray-600 uppercase border-b">
+                  <th class="px-3 py-2">#</th>
+                  <th class="px-3 py-2">Producto</th>
+                  <th class="px-3 py-2 text-center">Cantidad</th>
+                  <th class="px-3 py-2 text-right whitespace-nowrap">P. Unitario</th>
+                  <th class="px-3 py-2 text-right">Subtotal</th>
+                  <th class="px-3 py-2 text-center">Acción</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y">
+                <tr *ngFor="let d of detalles; let i = index" class="hover:bg-gray-50 transition-colors">
+                  <td class="px-3 py-2 text-sm text-gray-600">{{ i + 1 }}</td>
+                  <td class="px-3 py-2 text-sm font-medium text-gray-900">{{ getNombreProducto(d.id_producto) }}</td>
+                  <td class="px-3 py-2 text-sm text-gray-700 text-center">{{ d.cantidad }}</td>
+                  <td class="px-3 py-2 text-sm text-gray-700 text-right">S/ {{ (d.costo_unitario || 0).toFixed(2) }}</td>
+                  <td class="px-3 py-2 text-sm font-semibold text-blue-600 text-right">S/ {{ (d.subtotal || 0).toFixed(2) }}</td>
+                  <td class="px-3 py-2 text-center">
+                    <button
+                      type="button"
+                      (click)="eliminarDetalle(i)"
+                      class="text-red-600 hover:text-red-800 transition-colors p-1"
+                      title="Eliminar"
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="detalles.length === 0">
+                  <td colspan="6" class="text-center py-8 text-gray-500 italic">
+                    No hay productos agregados
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- TOTAL -->
+          <div class="flex justify-end">
+            <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+              <p class="text-sm text-gray-600 mb-1">Total:</p>
+              <p class="text-2xl font-bold text-blue-600">
+                S/ {{ (compra.total || 0).toFixed(2) }}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-    </ng-template>
-  </section>
+    </form>
+  </div>
 
-  
-  <div class="flex items-center justify-between px-0 py-1.5 mt-2 mb-2 border-b border-gray-200">
-    <div class="flex items-center text-gray-900 text-xs font-semibold uppercase gap-2">
-      <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <span>HISTORIAL DE COMPRAS</span>
+  <!-- MODAL NUEVO PRODUCTO RÁPIDO -->
+  <div
+    *ngIf="mostrarModalNuevoProducto"
+    class="fixed inset-0 z-50 flex items-center justify-center w-full h-full bg-black bg-opacity-50 overflow-y-auto overflow-x-hidden"
+    (click)="cerrarModalNuevoProducto()"
+  >
+    <div
+      (click)="$event.stopPropagation()"
+      class="relative p-4 w-full max-w-2xl"
+    >
+      <div class="relative bg-white rounded-xl shadow-lg border border-gray-200">
+        <!-- HEADER -->
+        <div class="flex items-center justify-between p-5 border-b border-gray-200">
+          <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Crear Nuevo Producto
+          </h3>
+          <button
+            type="button"
+            (click)="cerrarModalNuevoProducto()"
+            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center transition-colors"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- FORMULARIO -->
+        <form (ngSubmit)="guardarNuevoProducto()" class="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+          <!-- Nombre -->
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-700">
+              Nombre del Producto <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              [(ngModel)]="nuevoProducto.nombre"
+              name="nombre"
+              required
+              placeholder="Ej. Martillo de carpintero 16 oz"
+              class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+            />
+          </div>
+
+          <!-- Grid: Código, Categoría, Unidad -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                Código (Auto-generado)
+              </label>
+              <input
+                type="text"
+                [(ngModel)]="nuevoProducto.codigo"
+                name="codigo"
+                readonly
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-gray-100 text-gray-600 text-sm cursor-not-allowed"
+                title="Código generado automáticamente"
+              />
+            </div>
+
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                Categoría <span class="text-red-500">*</span>
+              </label>
+              <select
+                [(ngModel)]="nuevoProducto.id_categoria"
+                name="id_categoria"
+                required
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+              >
+                <option [ngValue]="null">Seleccione...</option>
+                <option *ngFor="let c of categorias" [ngValue]="c.id_categoria">
+                  {{ c.nombre }}
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                Unidad de Medida <span class="text-red-500">*</span>
+              </label>
+              <select
+                [(ngModel)]="nuevoProducto.unidad_medida"
+                name="unidad_medida"
+                required
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+              >
+                <option *ngFor="let unidad of unidadesMedida" [value]="unidad">
+                  {{ unidad }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Marca -->
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-700">
+              Marca
+            </label>
+            <input
+              type="text"
+              [(ngModel)]="nuevoProducto.marca"
+              name="marca"
+              placeholder="Ej. Stanley, Bosch, DeWalt"
+              class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+            />
+          </div>
+
+          <!-- Grid: Precios -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                Precio de Compra
+              </label>
+              <input
+                type="number"
+                [(ngModel)]="nuevoProducto.precio_compra"
+                name="precio_compra"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+              />
+            </div>
+
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                Precio de Venta <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                [(ngModel)]="nuevoProducto.precio_unitario"
+                name="precio_unitario"
+                required
+                min="0.01"
+                step="0.01"
+                placeholder="0.00"
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+              />
+            </div>
+
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                Precio Mayor
+              </label>
+              <input
+                type="number"
+                [(ngModel)]="nuevoProducto.precio_mayor"
+                name="precio_mayor"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+              />
+            </div>
+          </div>
+
+          <!-- Grid: Stock -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                Stock Inicial
+              </label>
+              <input
+                type="number"
+                [(ngModel)]="nuevoProducto.stock_actual"
+                name="stock_actual"
+                min="0"
+                step="0.01"
+                placeholder="0"
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+              />
+            </div>
+
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                Stock Mínimo
+              </label>
+              <input
+                type="number"
+                [(ngModel)]="nuevoProducto.stock_minimo"
+                name="stock_minimo"
+                min="0"
+                step="0.01"
+                placeholder="0"
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+              />
+            </div>
+          </div>
+
+          <!-- BOTONES -->
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+            <button
+              type="button"
+              (click)="cerrarModalNuevoProducto()"
+              class="px-5 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Crear Producto
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
-  
-  <section class="rounded-none border-none bg-transparent overflow-auto shadow-none px-0 pb-2">
-    <table class="w-full border-collapse min-w-[960px]" *ngIf="compras?.length; else sinHistorial">
-      <thead>
-        <tr>
-          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">
-            ID
-          </th>
-          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">
-            Proveedor
-          </th>
-          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">
-            Fecha
-          </th>
-          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">
-            Documento
-          </th>
-          <th class="text-left text-xs tracking-wider uppercase text-gray-600 py-3.5 px-4 bg-transparent sticky top-0 border-b border-gray-200 font-semibold">
-            Total
-          </th>
-        </tr>
-      </thead>
+  <!-- MODAL NUEVO PROVEEDOR RÁPIDO -->
+  <div
+    *ngIf="mostrarModalNuevoProveedor"
+    class="fixed inset-0 z-50 flex items-center justify-center w-full h-full bg-black bg-opacity-50 overflow-y-auto overflow-x-hidden"
+    (click)="cerrarModalNuevoProveedor()"
+  >
+    <div
+      (click)="$event.stopPropagation()"
+      class="relative p-4 w-full max-w-xl"
+    >
+      <div class="relative bg-white rounded-xl shadow-lg border border-gray-200">
+        <!-- HEADER -->
+        <div class="flex items-center justify-between p-5 border-b border-gray-200">
+          <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+            </svg>
+            Nuevo Proveedor
+          </h3>
+          <button
+            type="button"
+            (click)="cerrarModalNuevoProveedor()"
+            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center transition-colors"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
 
-      <tbody>
-        <tr *ngFor="let c of compras" class="hover:bg-blue-50 transition-colors">
-          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-600 text-sm">
-            {{ c.id_compra }}
-          </td>
+        <!-- FORMULARIO -->
+        <form (ngSubmit)="guardarNuevoProveedor()" class="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+          <!-- Nombre -->
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-700">
+              Nombre Completo <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              [(ngModel)]="nuevoProveedor.nombre"
+              name="nombre"
+              required
+              placeholder="Ej. Juan Pérez o Empresa SAC"
+              class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+            />
+          </div>
 
-          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-900 text-sm">
-            <div class="font-semibold text-gray-900 tracking-wide leading-snug">
-              {{ c.proveedores?.nombre || '-' }}
+          <!-- Grid: Tipo Documento y Número -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                Tipo de Documento <span class="text-red-500">*</span>
+              </label>
+              <select
+                [(ngModel)]="nuevoProveedor.tipo_documento"
+                name="tipo_documento"
+                required
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+              >
+                <option value="">Seleccione...</option>
+                <option value="DNI">DNI</option>
+                <option value="RUC">RUC</option>
+                <option value="CE">Carnet de Extranjería</option>
+                <option value="PASAPORTE">Pasaporte</option>
+                <option value="OTROS">Otros</option>
+              </select>
             </div>
-          </td>
 
-          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-600 text-sm">
-            {{ c.fecha | date:'short' }}
-          </td>
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                Número de Documento <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                [(ngModel)]="nuevoProveedor.numero_documento"
+                name="numero_documento"
+                required
+                placeholder="Ej. 12345678"
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+              />
+            </div>
+          </div>
 
-          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-600 text-sm">
-            {{ c.nro_documento || '-' }}
-          </td>
+          <!-- Grid: Teléfono y Correo -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                Teléfono
+              </label>
+              <input
+                type="text"
+                [(ngModel)]="nuevoProveedor.telefono"
+                name="telefono"
+                placeholder="Ej. +51 987 654 321"
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+              />
+            </div>
 
-          <td class="py-4 px-4 border-b border-gray-100 align-middle text-gray-900 text-sm font-semibold">
-            S/. {{ c.total }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                Correo Electrónico
+              </label>
+              <input
+                type="email"
+                [(ngModel)]="nuevoProveedor.correo"
+                name="correo"
+                placeholder="Ej. proveedor@email.com"
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+              />
+            </div>
+          </div>
 
-    <ng-template #sinHistorial>
-      <div class="py-12 px-6 text-center text-gray-600 border border-dashed border-gray-300 rounded-lg bg-white">
-        <svg class="w-12 h-12 mx-auto mb-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <h3 class="m-0 mb-2 text-gray-900 font-semibold">No hay compras registradas</h3>
-        <p class="m-0 text-gray-600">Aquí aparecerán tus compras guardadas.</p>
+          <!-- Dirección -->
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-700">
+              Dirección
+            </label>
+            <textarea
+              [(ngModel)]="nuevoProveedor.direccion"
+              name="direccion"
+              rows="2"
+              placeholder="Ej. Calle 123, Ciudad, País"
+              class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors resize-none"
+            ></textarea>
+          </div>
+
+          <!-- BOTONES -->
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+            <button
+              type="button"
+              (click)="cerrarModalNuevoProveedor()"
+              class="px-5 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Guardar Proveedor
+            </button>
+          </div>
+        </form>
       </div>
-    </ng-template>
-  </section>
+    </div>
+  </div>
+
+  <!-- HISTORIAL DE COMPRAS -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+    <div class="flex items-center gap-2 mb-4">
+      <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Historial de Compras</h2>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[800px] border-collapse" *ngIf="compras?.length; else sinHistorial">
+        <thead class="bg-gray-100 text-sm text-gray-600">
+          <tr>
+            <th class="px-4 py-3 text-left font-semibold">ID</th>
+            <th class="px-4 py-3 text-left font-semibold">Proveedor</th>
+            <th class="px-4 py-3 text-left font-semibold">Fecha</th>
+            <th class="px-4 py-3 text-left font-semibold">Documento</th>
+            <th class="px-4 py-3 text-right font-semibold">Total</th>
+          </tr>
+        </thead>
+
+        <tbody class="text-sm">
+          <tr *ngFor="let c of compras" class="border-b hover:bg-gray-50 transition-colors">
+            <td class="px-4 py-3 text-gray-600">{{ c.id_compra }}</td>
+            <td class="px-4 py-3 font-medium text-gray-900">{{ c.proveedores?.nombre || '—' }}</td>
+            <td class="px-4 py-3 text-gray-600">{{ c.fecha | date:'short' }}</td>
+            <td class="px-4 py-3 text-gray-600">{{ c.nro_documento || '—' }}</td>
+            <td class="px-4 py-3 text-right font-semibold text-blue-600">S/ {{ (c.total || 0).toFixed(2) }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ng-template #sinHistorial>
+        <div class="text-center py-12">
+          <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <p class="text-sm font-medium text-gray-500">No hay compras registradas</p>
+          <p class="text-xs text-gray-400 mt-1">Aquí aparecerán tus compras guardadas</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
 </div>

@@ -1,92 +1,133 @@
-<div class="p-4 space-y-4">
-
-  <h2 class="text-2xl font-bold text-gray-800">Reporte de Compras</h2>
+<div class="p-4 md:p-6 space-y-6">
+  <!-- HEADER -->
+  <div>
+    <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+      <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+      </svg>
+      Reporte de Compras
+    </h1>
+    <p class="text-gray-600 mt-1">Consulta y analiza las compras realizadas a proveedores.</p>
+  </div>
 
   <!-- FILTROS -->
-  <div class="bg-white p-4 rounded-xl shadow border space-y-4">
+  <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+    <div class="flex items-center gap-2 mb-4">
+      <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+      </svg>
+      <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Filtros</h3>
+    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
       <!-- FECHA DESDE -->
-      <div>
-        <label class="text-sm font-semibold text-gray-700">Desde</label>
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-700 mb-1">Desde</label>
         <input type="date"
                [(ngModel)]="desde"
-               class="w-full border rounded px-3 py-2">
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
       </div>
 
       <!-- FECHA HASTA -->
-      <div>
-        <label class="text-sm font-semibold text-gray-700">Hasta</label>
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-700 mb-1">Hasta</label>
         <input type="date"
                [(ngModel)]="hasta"
-               class="w-full border rounded px-3 py-2">
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
       </div>
 
       <!-- PROVEEDOR -->
-      <div>
-        <label class="text-sm font-semibold text-gray-700">Proveedor</label>
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-700 mb-1">Proveedor</label>
         <select [(ngModel)]="proveedorSeleccionado"
-                class="w-full border rounded px-3 py-2">
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
           <option [ngValue]="null">Todos</option>
           <option *ngFor="let p of proveedores" [ngValue]="p.id_proveedor">
             {{ p.nombre }}
           </option>
         </select>
       </div>
-
     </div>
 
     <button (click)="filtrar()"
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-      Generar reporte
+            class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-medium text-sm rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+      </svg>
+      Generar Reporte
     </button>
   </div>
 
+  <!-- BOTONES DE EXPORTACIÓN -->
+  <div class="flex items-center justify-between mb-4" *ngIf="resultados.length > 0">
+    <div class="text-sm text-gray-600">
+      <span class="font-semibold text-gray-800">Total: </span>
+      <span class="text-lg font-bold text-blue-600">{{ totalComprado | currency:'PEN' }}</span>
+    </div>
+    <div class="flex gap-2">
+      <button
+        (click)="exportarExcel()"
+        class="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white font-medium text-sm hover:bg-green-700 transition-colors shadow-sm"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        Exportar Excel
+      </button>
+
+      <button
+        (click)="exportarPDF()"
+        class="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white font-medium text-sm hover:bg-red-700 transition-colors shadow-sm"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+        </svg>
+        Exportar PDF
+      </button>
+    </div>
+  </div>
+
   <!-- RESULTADOS -->
-  <div class="bg-white p-4 rounded-xl shadow border">
-
-    <h3 class="text-lg font-bold text-gray-800 mb-3">
-      Resultados (Total: {{ totalComprado | currency:'PEN' }})
-    </h3>
-
+  <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
     <div class="overflow-x-auto">
-      <table class="w-full border-collapse min-w-[700px]">
-        <thead>
-          <tr class="bg-gray-100 text-left text-sm font-semibold">
-            <th class="px-3 py-2">Fecha</th>
-            <th class="px-3 py-2">Proveedor</th>
-            <th class="px-3 py-2">Documento</th>
-            <th class="px-3 py-2">Producto</th>
-            <th class="px-3 py-2">Cantidad</th>
-            <th class="px-3 py-2">Costo</th>
-            <th class="px-3 py-2">Subtotal</th>
+      <table class="w-full min-w-[800px] border-collapse">
+        <thead class="bg-gray-100 text-sm text-gray-600">
+          <tr>
+            <th class="px-4 py-3 text-left font-semibold">Fecha</th>
+            <th class="px-4 py-3 text-left font-semibold">Proveedor</th>
+            <th class="px-4 py-3 text-left font-semibold">Documento</th>
+            <th class="px-4 py-3 text-left font-semibold">Producto</th>
+            <th class="px-4 py-3 text-center font-semibold">Cantidad</th>
+            <th class="px-4 py-3 text-right font-semibold">Costo Unit.</th>
+            <th class="px-4 py-3 text-right font-semibold">Subtotal</th>
           </tr>
         </thead>
 
-        <tbody>
-          <tr *ngFor="let item of resultados" class="border-b">
-            <td class="px-3 py-2">{{ formatear(item.fecha) }}</td>
-            <td class="px-3 py-2">{{ item.proveedor }}</td>
-            <td class="px-3 py-2">{{ item.nro_documento || '—' }}</td>
-            <td class="px-3 py-2">{{ item.producto }}</td>
-            <td class="px-3 py-2">{{ item.cantidad }}</td>
-            <td class="px-3 py-2">{{ item.costo_unitario | currency:'PEN' }}</td>
-            <td class="px-3 py-2 font-semibold text-blue-600">
-              {{ item.subtotal | currency:'PEN' }}
+        <tbody class="text-sm">
+          <tr *ngFor="let item of resultados" class="border-b hover:bg-gray-50 transition-colors">
+            <td class="px-4 py-3 text-gray-700">{{ formatear(item.fecha) }}</td>
+            <td class="px-4 py-3 font-medium text-gray-900">{{ item.proveedor }}</td>
+            <td class="px-4 py-3 text-gray-600">{{ item.nro_documento || '—' }}</td>
+            <td class="px-4 py-3 text-gray-700">{{ item.producto }}</td>
+            <td class="px-4 py-3 text-center text-gray-700">{{ item.cantidad }}</td>
+            <td class="px-4 py-3 text-right text-gray-700">S/ {{ (item.costo_unitario || 0).toFixed(2) }}</td>
+            <td class="px-4 py-3 text-right font-semibold text-blue-600">
+              S/ {{ (item.subtotal || 0).toFixed(2) }}
             </td>
           </tr>
 
           <tr *ngIf="resultados.length === 0">
-            <td colspan="7" class="text-center text-gray-500 py-4">
-              No hay resultados
+            <td colspan="7" class="text-center text-gray-500 py-12">
+              <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+              </svg>
+              <p class="text-sm font-medium">No hay compras para los filtros seleccionados</p>
+              <p class="text-xs text-gray-400 mt-1">Selecciona filtros y haz clic en "Generar Reporte"</p>
             </td>
           </tr>
-
         </tbody>
       </table>
     </div>
-
   </div>
 
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -28,6 +28,12 @@ export class ProductosComponent implements OnInit {
   terminoBusqueda = '';
   mostrarFormulario = false;
   modoEdicion = false;
+  mostrarModalMovimientoStock = false;
+  productoMovimientoStock: Producto | null = null;
+  tipoMovimiento: 'ENTRADA' | 'SALIDA' | 'AJUSTE' = 'ENTRADA';
+  cantidadMovimiento: number = 0;
+  motivoMovimiento: string = '';
+  referenciaMovimiento: string = '';
   producto: Producto = this.getEmptyProducto();
 
   // Unidades de medida predefinidas
@@ -39,7 +45,8 @@ export class ProductosComponent implements OnInit {
     private categoriasService: CategoriasService,
     private proveedoresService: ProveedoresService,
     private comprasService: ComprasService,
-    private notificacionesService: NotificacionesService
+    private notificacionesService: NotificacionesService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
@@ -68,7 +75,8 @@ export class ProductosComponent implements OnInit {
       marca: null,
       material: null,
       peso: null,
-      medidas: null
+      medidas: null,
+      activo: true // Por defecto activo
     };
   }
 
@@ -92,7 +100,8 @@ export class ProductosComponent implements OnInit {
   async cargarProductos() {
     this.loading = true;
     try {
-      this.productos = await this.productosService.getProductos();
+      // Cargar todos los productos (incluyendo suspendidos) para mostrar en la tabla
+      this.productos = await this.productosService.getProductos(true);
       
       // Validar y corregir stocks negativos
       const productosConStockCero: string[] = [];
@@ -102,6 +111,55 @@ export class ProductosComponent implements OnInit {
         if (producto.stock_actual < 0) {
           console.warn(`Producto ${producto.nombre} tiene stock negativo (${producto.stock_actual}). Corrigiendo a 0.`);
           producto.stock_actual = 0;
+        }
+        
+        // Normalizar campo activo: si es null o undefined, tratarlo como true por defecto
+        // PERO si el stock es cero, debe ser false
+        const stockActual = producto.stock_actual || 0;
+        
+        // Si el campo activo no existe o es null/undefined, determinar su valor basado en el stock
+        if (producto.activo === null || producto.activo === undefined) {
+          // Si no existe el campo, determinar el estado basado en el stock
+          producto.activo = stockActual > 0 ? true : false;
+          console.log(`Producto "${producto.nombre}": campo 'activo' no existe, establecido a ${producto.activo} basado en stock ${stockActual}`);
+        }
+        
+        // SUSPENSIÓN AUTOMÁTICA: Si el producto tiene stock cero y está activo, suspenderlo automáticamente
+        if (stockActual === 0 && producto.activo === true && producto.id_producto) {
+          console.log(`[SUSPENSIÓN AUTOMÁTICA] Producto "${producto.nombre}" tiene stock ${stockActual} y está activo. Suspendiéndolo...`);
+          try {
+            // Intentar actualizar en Supabase
+            await this.productosService.updateProducto(producto.id_producto, { activo: false });
+            producto.activo = false;
+            console.log(`✅ Producto "${producto.nombre}" suspendido automáticamente por stock cero`);
+          } catch (error: any) {
+            // Si el error es porque el campo no existe, solo actualizar localmente
+            if (error?.message && (error.message.includes('column') || error.message.includes('activo') || error.message.includes('does not exist'))) {
+              console.warn(`⚠️ Campo 'activo' no existe en Supabase. Actualizando solo localmente. Ejecuta el SQL para agregar el campo.`);
+              producto.activo = false; // Actualizar localmente
+            } else {
+              console.error(`❌ Error al suspender producto ${producto.id_producto}:`, error);
+            }
+          }
+        }
+        
+        // REACTIVACIÓN AUTOMÁTICA: Si el producto tiene stock > 0 y está suspendido, reactivarlo
+        if (stockActual > 0 && producto.activo === false && producto.id_producto) {
+          console.log(`[REACTIVACIÓN AUTOMÁTICA] Producto "${producto.nombre}" tiene stock ${stockActual} y está suspendido. Reactivándolo...`);
+          try {
+            // Intentar actualizar en Supabase
+            await this.productosService.updateProducto(producto.id_producto, { activo: true });
+            producto.activo = true;
+            console.log(`✅ Producto "${producto.nombre}" reactivado automáticamente por tener stock`);
+          } catch (error: any) {
+            // Si el error es porque el campo no existe, solo actualizar localmente
+            if (error?.message && (error.message.includes('column') || error.message.includes('activo') || error.message.includes('does not exist'))) {
+              console.warn(`⚠️ Campo 'activo' no existe en Supabase. Actualizando solo localmente. Ejecuta el SQL para agregar el campo.`);
+              producto.activo = true; // Actualizar localmente
+            } else {
+              console.error(`❌ Error al reactivar producto ${producto.id_producto}:`, error);
+            }
+          }
         }
         
         // Detectar productos con stock cero
@@ -193,12 +251,166 @@ export class ProductosComponent implements OnInit {
   // EDITAR
   // ============================
   editarProducto(p: Producto) {
+    // Cerrar el modal de movimiento de stock si está abierto
+    this.mostrarModalMovimientoStock = false;
+    this.productoMovimientoStock = null;
+    // Abrir el modal de editar
     this.modoEdicion = true;
     this.mostrarFormulario = true;
     this.producto = { ...p };
     // Asegurar que el stock nunca sea negativo al editar
     if (this.producto.stock_actual < 0) {
       this.producto.stock_actual = 0;
+    }
+  }
+
+  // ============================
+  // MOVIMIENTO DE STOCK (KARDEX)
+  // ============================
+  abrirModalMovimientoStock(producto: Producto) {
+    console.log('Abriendo modal movimiento stock para:', producto.nombre);
+    // Cerrar el modal de editar si está abierto
+    this.mostrarFormulario = false;
+    this.modoEdicion = false;
+    // Abrir el modal de movimiento de stock
+    this.productoMovimientoStock = { ...producto };
+    this.tipoMovimiento = 'ENTRADA';
+    this.cantidadMovimiento = 0;
+    this.motivoMovimiento = '';
+    this.referenciaMovimiento = '';
+    this.mostrarModalMovimientoStock = true;
+    this.cdr.detectChanges(); // Forzar detección de cambios
+    console.log('Modal movimiento stock:', {
+      mostrar: this.mostrarModalMovimientoStock,
+      producto: this.productoMovimientoStock?.nombre,
+      tieneProducto: !!this.productoMovimientoStock
+    });
+  }
+
+  cerrarModalMovimientoStock() {
+    this.mostrarModalMovimientoStock = false;
+    this.productoMovimientoStock = null;
+    this.tipoMovimiento = 'ENTRADA';
+    this.cantidadMovimiento = 0;
+    this.motivoMovimiento = '';
+    this.referenciaMovimiento = '';
+  }
+
+  // Método auxiliar para cálculos en el template
+  calcularNuevoStockMovimiento(): number {
+    if (!this.productoMovimientoStock) return 0;
+    const stockActual = this.productoMovimientoStock.stock_actual || 0;
+    const cantidad = this.cantidadMovimiento || 0;
+
+    if (this.tipoMovimiento === 'ENTRADA') {
+      return stockActual + cantidad;
+    } else if (this.tipoMovimiento === 'SALIDA') {
+      return Math.max(0, stockActual - cantidad);
+    } else {
+      // AJUSTE: establece el stock directamente
+      return cantidad;
+    }
+  }
+
+  async guardarMovimientoStock() {
+    if (!this.productoMovimientoStock || !this.productoMovimientoStock.id_producto) return;
+
+    if (this.cantidadMovimiento <= 0) {
+      alert('La cantidad debe ser mayor a 0');
+      return;
+    }
+
+    try {
+      const stockAntes = this.productoMovimientoStock.stock_actual || 0;
+      let nuevoStock = stockAntes;
+      let cantidadDelta = this.cantidadMovimiento;
+
+      // Calcular el nuevo stock según el tipo de movimiento
+      if (this.tipoMovimiento === 'ENTRADA') {
+        nuevoStock = stockAntes + cantidadDelta;
+      } else if (this.tipoMovimiento === 'SALIDA') {
+        nuevoStock = Math.max(0, stockAntes - cantidadDelta);
+        cantidadDelta = -cantidadDelta; // Negativo para salida
+      } else {
+        // AJUSTE: establece el stock directamente
+        nuevoStock = cantidadDelta;
+        cantidadDelta = cantidadDelta - stockAntes; // Delta real
+      }
+
+      // Asegurar que el stock no sea negativo
+      nuevoStock = Math.max(0, nuevoStock);
+
+      // 1. Actualizar stock en el producto
+      await this.productosService.updateProducto(this.productoMovimientoStock.id_producto, { 
+        stock_actual: nuevoStock 
+      });
+
+      // 2. Registrar movimiento en movimientos_stock (kardex)
+      const { data: movimientoData, error: movimientoError } = await this.productosService.registrarMovimientoStock({
+        id_producto: this.productoMovimientoStock.id_producto,
+        tipo: this.tipoMovimiento,
+        cantidad: Math.abs(cantidadDelta), // Siempre positivo en la BD
+        stock_antes: stockAntes,
+        stock_despues: nuevoStock,
+        referencia: this.referenciaMovimiento || (this.motivoMovimiento ? `Ajuste: ${this.motivoMovimiento}` : 'Movimiento manual')
+      });
+
+      if (movimientoError) {
+        console.error('Error al registrar movimiento:', movimientoError);
+        // Continuar aunque falle el registro del movimiento
+      }
+
+      // 3. Actualizar el producto en la lista local
+      const productoEnLista = this.productos.find(p => p.id_producto === this.productoMovimientoStock!.id_producto);
+      if (productoEnLista && productoEnLista.id_producto) {
+        productoEnLista.stock_actual = nuevoStock;
+        
+        // Si el stock es cero, suspender automáticamente
+        if (nuevoStock === 0 && productoEnLista.activo !== false) {
+          try {
+            if (productoEnLista.id_producto) {
+              await this.productosService.updateProducto(productoEnLista.id_producto, { activo: false });
+              productoEnLista.activo = false;
+            }
+          } catch (error: any) {
+            if (error?.message && (error.message.includes('column') || error.message.includes('activo'))) {
+              productoEnLista.activo = false;
+            }
+          }
+        } else if (nuevoStock > 0 && productoEnLista.activo === false) {
+          // Si el stock > 0 y está suspendido, reactivarlo
+          try {
+            if (productoEnLista.id_producto) {
+              await this.productosService.updateProducto(productoEnLista.id_producto, { activo: true });
+              productoEnLista.activo = true;
+            }
+          } catch (error: any) {
+            if (error?.message && (error.message.includes('column') || error.message.includes('activo'))) {
+              productoEnLista.activo = true;
+            }
+          }
+        }
+      }
+
+      const tipoTexto = this.tipoMovimiento === 'ENTRADA' ? 'entrada' : 
+                       this.tipoMovimiento === 'SALIDA' ? 'salida' : 'ajuste';
+      
+      this.notificacionesService.agregarNotificacion({
+        id: `movimiento-stock-${this.productoMovimientoStock.id_producto}-${Date.now()}`,
+        tipo: 'info',
+        titulo: 'Movimiento de Stock Registrado',
+        mensaje: `Se registró una ${tipoTexto} de ${this.cantidadMovimiento} unidades para "${this.productoMovimientoStock.nombre}". Stock: ${stockAntes} → ${nuevoStock}`,
+        producto: this.productoMovimientoStock,
+        fecha: new Date(),
+        leida: false
+      });
+
+      this.cerrarModalMovimientoStock();
+      this.filtrarProductos();
+
+    } catch (err) {
+      console.error(err);
+      alert('Error al registrar movimiento de stock: ' + (err instanceof Error ? err.message : 'Error desconocido'));
     }
   }
 
@@ -237,9 +449,19 @@ export class ProductosComponent implements OnInit {
   // ============================
   // PREPARAR DATOS PARA SUPABASE
   // ============================
+  // Este método prepara los datos del producto antes de guardarlos en Supabase.
+  // IMPORTANTE: El campo 'activo' se calcula automáticamente basado en el stock:
+  // - Si stock_actual > 0 → activo = true (producto disponible)
+  // - Si stock_actual = 0 → activo = false (producto suspendido automáticamente)
+  // Este campo reemplaza la funcionalidad de "eliminar" producto, ahora se suspenden en lugar de eliminarse.
   prepararDatosParaSupabase(producto: Producto): any {
     // Validar que stock_actual nunca sea negativo
     const stockActual = Math.max(0, producto.stock_actual || 0);
+    
+    // SUSPENSIÓN AUTOMÁTICA: Si stock es cero, suspender automáticamente
+    // REACTIVACIÓN AUTOMÁTICA: Si stock > 0, activar automáticamente
+    // Este campo 'activo' es un BOOLEAN que debe existir en la tabla 'productos' de Supabase
+    const activo = stockActual > 0 ? true : false;
     
     const datos: any = {
       codigo: producto.codigo,
@@ -255,7 +477,8 @@ export class ProductosComponent implements OnInit {
       tiene_caducidad: producto.tiene_caducidad,
       fecha_vencimiento: producto.fecha_vencimiento || null,
       tiene_garantia: producto.tiene_garantia,
-      meses_garantia: producto.meses_garantia || null
+      meses_garantia: producto.meses_garantia || null,
+      activo: activo // Campo BOOLEAN: true = activo/disponible, false = suspendido/no disponible
     };
 
     // Campos nuevos que van a Supabase
@@ -290,17 +513,31 @@ export class ProductosComponent implements OnInit {
         });
       }
 
-      // Notificación cuando el stock es cero
+      // Notificación cuando el stock es cero (se suspenderá automáticamente)
       if (this.producto.stock_actual === 0) {
         this.notificacionesService.agregarNotificacion({
           id: `stock-cero-guardar-${this.producto.id_producto || Date.now()}`,
           tipo: 'stock_agotado',
-          titulo: 'Producto con Stock CERO',
-          mensaje: `El producto "${this.producto.nombre}" se guardará con stock en CERO. No se podrán realizar ventas hasta que se reponga stock.`,
+          titulo: 'Producto Suspendido Automáticamente',
+          mensaje: `El producto "${this.producto.nombre}" ha sido suspendido automáticamente por tener stock en CERO. Se reactivará cuando se actualice el stock.`,
           producto: this.producto,
           fecha: new Date(),
           leida: false
         });
+      } else if (this.producto.stock_actual > 0 && this.producto.id_producto) {
+        // Notificar reactivación si el producto estaba suspendido y ahora tiene stock
+        const productoAnterior = this.productos.find(p => p.id_producto === this.producto.id_producto);
+        if (productoAnterior && productoAnterior.activo === false) {
+          this.notificacionesService.agregarNotificacion({
+            id: `producto-reactivado-${this.producto.id_producto}`,
+            tipo: 'info',
+            titulo: 'Producto Reactivado',
+            mensaje: `El producto "${this.producto.nombre}" ha sido reactivado automáticamente al actualizar el stock.`,
+            producto: this.producto,
+            fecha: new Date(),
+            leida: false
+          });
+        }
       }
 
       // Generar código automáticamente si no existe (solo para productos nuevos)
@@ -311,28 +548,65 @@ export class ProductosComponent implements OnInit {
       // Preparar datos solo con campos que existen en Supabase
       const datosParaGuardar = this.prepararDatosParaSupabase(this.producto);
 
-      if (this.modoEdicion && this.producto.id_producto) {
-        await this.productosService.updateProducto(this.producto.id_producto, datosParaGuardar);
-        this.notificacionesService.agregarNotificacion({
-          id: `producto-actualizado-${Date.now()}`,
-          tipo: 'info',
-          titulo: 'Producto Actualizado',
-          mensaje: `El producto "${this.producto.nombre}" ha sido actualizado correctamente.`,
-          producto: this.producto,
-          fecha: new Date(),
-          leida: false
-        });
-      } else {
-        await this.productosService.addProducto(datosParaGuardar);
-        this.notificacionesService.agregarNotificacion({
-          id: `producto-creado-${Date.now()}`,
-          tipo: 'info',
-          titulo: 'Producto Creado',
-          mensaje: `El producto "${this.producto.nombre}" ha sido creado correctamente.`,
-          producto: this.producto,
-          fecha: new Date(),
-          leida: false
-        });
+      try {
+        if (this.modoEdicion && this.producto.id_producto) {
+          await this.productosService.updateProducto(this.producto.id_producto, datosParaGuardar);
+          this.notificacionesService.agregarNotificacion({
+            id: `producto-actualizado-${Date.now()}`,
+            tipo: 'info',
+            titulo: 'Producto Actualizado',
+            mensaje: `El producto "${this.producto.nombre}" ha sido actualizado correctamente.`,
+            producto: this.producto,
+            fecha: new Date(),
+            leida: false
+          });
+        } else {
+          await this.productosService.addProducto(datosParaGuardar);
+          this.notificacionesService.agregarNotificacion({
+            id: `producto-creado-${Date.now()}`,
+            tipo: 'info',
+            titulo: 'Producto Creado',
+            mensaje: `El producto "${this.producto.nombre}" ha sido creado correctamente.`,
+            producto: this.producto,
+            fecha: new Date(),
+            leida: false
+          });
+        }
+      } catch (err: any) {
+        // Si el error es porque el campo 'activo' no existe, intentar guardar sin ese campo
+        if (err?.message && (err.message.includes('column') || err.message.includes('activo') || err.message.includes('does not exist'))) {
+          console.warn('Campo "activo" no existe en Supabase. Guardando sin ese campo...');
+          // Eliminar el campo activo de los datos y volver a intentar
+          const datosSinActivo = { ...datosParaGuardar };
+          delete datosSinActivo.activo;
+          
+          if (this.modoEdicion && this.producto.id_producto) {
+            await this.productosService.updateProducto(this.producto.id_producto, datosSinActivo);
+            this.notificacionesService.agregarNotificacion({
+              id: `producto-actualizado-sin-activo-${Date.now()}`,
+              tipo: 'warning',
+              titulo: 'Producto Actualizado (sin campo activo)',
+              mensaje: `El producto "${this.producto.nombre}" se guardó correctamente, pero el campo 'activo' no existe en Supabase. Ejecuta el SQL para agregarlo.`,
+              producto: this.producto,
+              fecha: new Date(),
+              leida: false
+            });
+          } else {
+            await this.productosService.addProducto(datosSinActivo);
+            this.notificacionesService.agregarNotificacion({
+              id: `producto-creado-sin-activo-${Date.now()}`,
+              tipo: 'warning',
+              titulo: 'Producto Creado (sin campo activo)',
+              mensaje: `El producto "${this.producto.nombre}" se creó correctamente, pero el campo 'activo' no existe en Supabase. Ejecuta el SQL para agregarlo.`,
+              producto: this.producto,
+              fecha: new Date(),
+              leida: false
+            });
+          }
+        } else {
+          // Si es otro error, lanzarlo
+          throw err;
+        }
       }
 
       this.producto = this.getEmptyProducto();
@@ -346,54 +620,57 @@ export class ProductosComponent implements OnInit {
     }
   }
 
-  // ============================
-  // ELIMINAR
-  // ============================
-  async eliminarProducto(id: number) {
-    const producto = this.productos.find(p => p.id_producto === id);
-    const nombreProducto = producto?.nombre || 'producto';
-    
-    if (!confirm(`¿Deseas eliminar el producto "${nombreProducto}"?`)) return;
 
+  // ============================
+  // SUSPENDER/ACTIVAR PRODUCTO
+  // ============================
+  async cambiarEstadoProducto(producto: Producto) {
+    if (!producto.id_producto) return;
+    
+    const nuevoEstado = !producto.activo;
+    const accion = nuevoEstado ? 'activar' : 'suspender';
+    
+    // No pedir confirmación, cambiar directamente con el toggle
     try {
-      await this.productosService.deleteProducto(id);
+      await this.productosService.updateProducto(producto.id_producto, { activo: nuevoEstado });
+      
+      // Actualizar estado local
+      producto.activo = nuevoEstado;
+      
       this.notificacionesService.agregarNotificacion({
-        id: `producto-eliminado-${Date.now()}`,
-        tipo: 'info',
-        titulo: 'Producto Eliminado',
-        mensaje: `El producto "${nombreProducto}" ha sido eliminado correctamente.`,
+        id: `producto-${accion}-${producto.id_producto}-${Date.now()}`,
+        tipo: nuevoEstado ? 'info' : 'warning',
+        titulo: nuevoEstado ? 'Producto Activado' : 'Producto Suspendido',
+        mensaje: `El producto "${producto.nombre}" ha sido ${nuevoEstado ? 'activado' : 'suspendido'} ${nuevoEstado ? 'y ahora está disponible para ventas' : 'y no aparecerá en el POS'}.`,
         producto: producto,
         fecha: new Date(),
         leida: false
       });
-      this.cargarProductos();
+      
     } catch (err: any) {
-      let mensajeError = 'Error desconocido al eliminar el producto';
+      console.error(err);
       
-      if (err?.message) {
-        if (err.message.includes('foreign key') || 
-            err.message.includes('violates foreign key') ||
-            err.message.includes('still referenced') ||
-            err.message.includes('constraint')) {
-          mensajeError = `No se puede eliminar el producto "${nombreProducto}" porque está siendo utilizado en ventas o compras registradas. Para eliminarlo, primero debes eliminar o modificar esos registros en Supabase.`;
-        } else {
-          mensajeError = err.message;
-        }
+      // Si el error es porque el campo no existe, mostrar mensaje específico
+      if (err?.message && (err.message.includes('column') || err.message.includes('activo') || err.message.includes('does not exist'))) {
+        // Actualizar localmente aunque falle en Supabase
+        producto.activo = nuevoEstado;
+        this.notificacionesService.agregarNotificacion({
+          id: `producto-${accion}-local-${producto.id_producto}-${Date.now()}`,
+          tipo: 'warning',
+          titulo: 'Campo "activo" no existe en Supabase',
+          mensaje: `El campo 'activo' no existe en la base de datos. El estado se actualizó solo localmente. Por favor, ejecuta el SQL para agregar el campo 'activo' a la tabla 'productos'.`,
+          producto: producto,
+          fecha: new Date(),
+          leida: false
+        });
+      } else {
+        // Revertir el estado si hay otro tipo de error
+        producto.activo = !nuevoEstado;
+        alert(`Error al ${accion} el producto: ${err instanceof Error ? err.message : 'Error desconocido'}`);
       }
-      
-      console.error('Error al eliminar producto:', err);
-      
-      this.notificacionesService.agregarNotificacion({
-        id: `error-eliminar-${Date.now()}`,
-        tipo: 'error',
-        titulo: 'Error al Eliminar Producto',
-        mensaje: mensajeError,
-        producto: producto,
-        fecha: new Date(),
-        leida: false
-      });
     }
   }
+
 
   // ============================
   // OBTENER NOMBRE DE CATEGORÍA

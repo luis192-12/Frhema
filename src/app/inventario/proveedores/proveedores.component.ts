@@ -285,6 +285,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProveedoresService } from '../../core/services/inventario/proveedores.service';
 import { Proveedor } from '../../core/models/proveedor.model';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-proveedores',
@@ -486,7 +487,93 @@ export class ProveedoresComponent implements OnInit {
     }
   }
   exportarExcel() {
-    console.log("Exportar a Excel (pendiente)");
+    try {
+      if (this.proveedoresFiltrados.length === 0) {
+        alert('No hay proveedores para exportar.');
+        return;
+      }
+
+      // Preparar los datos para exportar
+      const datosExportar = this.proveedoresFiltrados.map(p => ({
+        'ID': p.id_proveedor || '',
+        'Nombre': p.nombre || '',
+        'Contacto': p.contacto || '',
+        'Teléfono': p.telefono || '',
+        'Dirección': p.direccion || '',
+        'Tipo Documento': p.tipo_documento || '',
+        'Número Documento': p.numero_documento || '',
+        'Correo': p.correo || '',
+        'Estado': p.activo !== false ? 'Activo' : 'Inactivo'
+      }));
+
+      // Preparar datos con metadatos incluidos
+      const fechaExportacion = new Date().toLocaleString('es-PE', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      // Definir encabezados
+      const encabezados = ['ID', 'Nombre', 'Contacto', 'Teléfono', 'Dirección', 'Tipo Documento', 'Número Documento', 'Correo', 'Estado'];
+
+      // Crear array con metadatos y datos
+      const datosCompletos: any[] = [
+        ['REPORTE DE PROVEEDORES'],
+        ['FERRETERÍA RHEMA'],
+        [`Fecha de Exportación: ${fechaExportacion}`],
+        [`Total de Registros: ${this.proveedoresFiltrados.length}`],
+        [], // Fila vacía
+        encabezados, // Encabezados
+        ...datosExportar.map(p => [
+          p['ID'],
+          p['Nombre'],
+          p['Contacto'],
+          p['Teléfono'],
+          p['Dirección'],
+          p['Tipo Documento'],
+          p['Número Documento'],
+          p['Correo'],
+          p['Estado']
+        ]) // Datos
+      ];
+
+      // Crear el libro de trabajo
+      const wb = XLSX.utils.book_new();
+      
+      // Crear la hoja de trabajo desde los datos completos
+      const ws = XLSX.utils.aoa_to_sheet(datosCompletos);
+
+      // Ajustar el ancho de las columnas
+      const columnWidths = [
+        { wch: 8 },   // ID
+        { wch: 30 },  // Nombre
+        { wch: 25 },  // Contacto
+        { wch: 15 },  // Teléfono
+        { wch: 40 },  // Dirección
+        { wch: 18 },  // Tipo Documento
+        { wch: 20 },  // Número Documento
+        { wch: 30 },  // Correo
+        { wch: 12 }   // Estado
+      ];
+      ws['!cols'] = columnWidths;
+
+      // Agregar la hoja al libro
+      XLSX.utils.book_append_sheet(wb, ws, 'Proveedores');
+
+      // Generar el nombre del archivo con fecha
+      const fecha = new Date().toISOString().split('T')[0];
+      const nombreArchivo = `proveedores_${fecha}.xlsx`;
+
+      // Descargar el archivo
+      XLSX.writeFile(wb, nombreArchivo);
+
+      alert(`Archivo Excel exportado correctamente: ${nombreArchivo}\n\nTotal de registros: ${this.proveedoresFiltrados.length}`);
+    } catch (error) {
+      console.error('Error al exportar a Excel:', error);
+      alert('Error al exportar el archivo Excel. Por favor, intente nuevamente.');
+    }
   }
 
 }

@@ -1,115 +1,107 @@
-<div class="w-full max-w-[1200px] mx-auto flex flex-col px-2 md:px-3 pb-2">
-  
-  <header class="flex items-start justify-between gap-4 px-0 py-3 pb-2 bg-transparent border-none shadow-none">
-    <div class="flex-1">
-      <div class="flex items-center gap-3">
-        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
-          </path>
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-        </svg>
-        <div>
-          <h1 class="m-0 text-2xl font-semibold text-gray-900 tracking-wide">Gestión de Usuarios y Roles</h1>
-          <p class="mt-1 mb-0 text-sm text-gray-600">Administra usuarios y asigna roles del sistema.</p>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <div class="flex items-center justify-between px-0 py-1.5 mb-1.5 border-b border-gray-200">
-    <div class="flex items-center text-gray-900 text-xs font-semibold uppercase gap-2">
-      <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<div class="p-4 md:p-6 space-y-6">
+  <!-- HEADER -->
+  <div>
+    <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+      <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+          d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+        </path>
       </svg>
-      <span>REGISTROS</span>
-    </div>
+      Gestión de Usuarios y Roles
+    </h1>
+    <p class="text-gray-600 mt-1">Administra usuarios y asigna roles del sistema.</p>
   </div>
 
-  <section class="rounded-none border-none bg-transparent overflow-auto shadow-none px-0 pb-2">
-    <div *ngIf="loading" class="p-6 text-center text-gray-500">Cargando usuarios...</div>
+  <!-- TABLA DE USUARIOS -->
+  <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+    <div *ngIf="loading" class="flex items-center justify-center py-12">
+      <div class="text-sm text-gray-500">Cargando usuarios...</div>
+    </div>
 
-    <table class="w-full border-collapse min-w-[960px]" *ngIf="!loading && usuarios.length; else sinDatos">
-      <thead>
-        <tr>
-          <th class="text-left text-xs uppercase py-3.5 px-4 border-b">Usuario</th>
-          <th class="text-left text-xs uppercase py-3.5 px-4 border-b">Nombre</th>
-          <th class="text-left text-xs uppercase py-3.5 px-4 border-b">Apellido</th>
-          <th class="text-left text-xs uppercase py-3.5 px-4 border-b">Rol actual</th>
-          <th class="text-left text-xs uppercase py-3.5 px-4 border-b">Asignar rol</th>
-          <th class="text-left text-xs uppercase py-3.5 px-4 border-b">Acción</th>
-        </tr>
-      </thead>
+    <div *ngIf="!loading && usuarios.length === 0" class="text-center py-12">
+      <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+        </path>
+      </svg>
+      <p class="text-sm font-medium text-gray-500">No hay usuarios registrados</p>
+      <p class="text-xs text-gray-400 mt-1">Los usuarios aparecerán aquí cuando se registren</p>
+    </div>
 
-      <tbody>
-        <tr *ngFor="let u of usuarios" class="hover:bg-blue-50 transition-colors">
+    <div *ngIf="!loading && usuarios.length > 0" class="overflow-x-auto">
+      <table class="w-full min-w-[1000px] border-collapse">
+        <thead class="bg-gray-100 text-sm text-gray-600">
+          <tr>
+            <th class="px-4 py-3 text-left font-semibold">Usuario</th>
+            <th class="px-4 py-3 text-left font-semibold">Nombre</th>
+            <th class="px-4 py-3 text-left font-semibold">Apellido</th>
+            <th class="px-4 py-3 text-left font-semibold">Rol Actual</th>
+            <th class="px-4 py-3 text-left font-semibold">Asignar Rol</th>
+            <th class="px-4 py-3 text-left font-semibold">Acción</th>
+          </tr>
+        </thead>
 
-          <!-- Usuario -->
-          <td class="py-4 px-4 border-b font-semibold">
-            {{ u.nombre_usuario }}
+        <tbody class="text-sm">
+          <tr *ngFor="let u of usuarios" class="border-b hover:bg-gray-50 transition-colors">
+            <!-- Usuario -->
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-2">
+                <span class="font-semibold text-gray-900">{{ u.nombre_usuario }}</span>
+                <span *ngIf="u.esSuperadmin === true"
+                  class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-purple-100 text-purple-700 border border-purple-300">
+                  SUPERADMIN
+                </span>
+              </div>
+            </td>
 
-            <!-- ⭐ BADGE SUPERADMIN -->
-            <span *ngIf="u.esSuperadmin === true"
-              class="ml-2 px-2 py-1 text-[10px] font-bold rounded-full bg-purple-100 text-purple-700 border border-purple-300">
-              SUPERADMIN
-            </span>
-          </td>
+            <td class="px-4 py-3 text-gray-700">{{ u.nombre || '—' }}</td>
+            <td class="px-4 py-3 text-gray-700">{{ u.apellido || '—' }}</td>
 
-          <td class="py-4 px-4 border-b">{{ u.nombre || '-' }}</td>
-          <td class="py-4 px-4 border-b">{{ u.apellido || '-' }}</td>
+            <!-- Rol actual -->
+            <td class="px-4 py-3">
+              <span
+                class="px-2.5 py-1 rounded-full text-xs font-medium"
+                [class.bg-purple-100]="u.esSuperadmin === true"
+                [class.text-purple-800]="u.esSuperadmin === true"
+                [class.bg-blue-100]="u.roles?.nombre_rol && u.esSuperadmin !== true"
+                [class.text-blue-700]="u.roles?.nombre_rol && u.esSuperadmin !== true"
+                [class.bg-gray-100]="!u.roles?.nombre_rol"
+                [class.text-gray-600]="!u.roles?.nombre_rol">
+                {{ u.esSuperadmin === true ? 'SUPERADMIN' : (u.roles?.nombre_rol || 'SIN ROL') }}
+              </span>
+            </td>
 
-          <!-- Rol actual -->
-          <td class="py-4 px-4 border-b">
-            <span
-              class="px-2 py-1 rounded-full text-xs font-medium"
-              [class.bg-purple-200]="u.esSuperadmin === true"
-              [class.text-purple-800]="u.esSuperadmin === true"
-              [class.bg-blue-100]="u.roles?.nombre_rol && u.esSuperadmin !== true"
-              [class.text-blue-700]="u.roles?.nombre_rol && u.esSuperadmin !== true"
-              [class.bg-gray-100]="!u.roles?.nombre_rol">
-              {{ u.esSuperadmin === true ? 'SUPERADMIN' : (u.roles?.nombre_rol || 'SIN ROL') }}
-            </span>
-          </td>
+            <!-- Asignar Rol -->
+            <td class="px-4 py-3">
+              <select
+                [(ngModel)]="u.id_rol"
+                [disabled]="u.esSuperadmin === true"
+                class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-900 outline-none text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              >
+                <option [ngValue]="null">SIN ROL</option>
+                <option *ngFor="let r of roles" [ngValue]="r.id_rol">
+                  {{ r.nombre_rol }}
+                </option>
+              </select>
+            </td>
 
-          <!-- Asignar Rol -->
-          <td class="py-4 px-4 border-b">
-            <select
-              [(ngModel)]="u.id_rol"
-              [disabled]="u.esSuperadmin === true"
-              class="px-3 py-2 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 outline-none text-sm"
-            >
-              <option [ngValue]="null">SIN ROL</option>
-              <option *ngFor="let r of roles" [ngValue]="r.id_rol">
-                {{ r.nombre_rol }}
-              </option>
-            </select>
-          </td>
-
-          <!-- Botón Guardar -->
-          <td class="py-4 px-4 border-b">
-            <button
-              (click)="guardarRol(u)"
-              [disabled]="u.esSuperadmin === true"
-              [class.opacity-50]="u.esSuperadmin === true"
-              class="border border-gray-300 bg-white text-gray-900 rounded-lg px-3.5 py-2 inline-flex items-center gap-2 text-xs font-medium"
-              title="Guardar rol"
-            >
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              <span>Guardar</span>
-            </button>
-          </td>
-
-        </tr>
-      </tbody>
-    </table>
-
-    <ng-template #sinDatos>
-      <div class="py-12 px-6 text-center text-gray-600">
-        <h3 class="mb-2 font-semibold">No hay usuarios registrados</h3>
-      </div>
-    </ng-template>
-  </section>
+            <!-- Botón Guardar -->
+            <td class="px-4 py-3">
+              <button
+                (click)="guardarRol(u)"
+                [disabled]="u.esSuperadmin === true"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Guardar rol"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>Guardar</span>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>

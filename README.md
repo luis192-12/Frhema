@@ -1,27 +1,89 @@
-# FerreteriaRhema
+# Ferretería Rhema — Sistema de Gestión de Inventario (Web)
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.12.
+Sistema web para **automatizar inventario, ventas, compras y reportes** de la *Ferretería Rhema* (Andahuaylas, Apurímac), mejorando el control de stock, reduciendo errores manuales y facilitando la toma de decisiones.
 
-## Development server
+---
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## 📌 Descripción general
+**Ferretería Rhema** es una plataforma web accesible desde navegador (PC / móvil) orientada a:
+- Centralizar información de productos, ventas, compras y usuarios.
+- Actualizar stock automáticamente en cada movimiento.
+- Generar alertas (stock mínimo, vencimientos).
+- Emitir comprobantes (boleta/factura) y reportes exportables.
 
-## Code scaffolding
+---
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## ✨ Funcionalidades (alcance)
+### Inventario / Productos
+- Registro de productos (código, nombre, categoría, proveedor, stock, precios, etc.).
+- Clasificación por tipo, marca y unidad de medida.
+- **Alertas** de stock mínimo.
+- Registro de **fecha de caducidad** (y alertas de vencimiento).
 
-## Build
+### Ventas (POS)
+- Registro de ventas con distintos métodos de pago (efectivo, tarjeta u otros).
+- Generación de comprobantes (boleta/factura).
+- Historial de ventas y trazabilidad por usuario responsable.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+### Compras y Proveedores
+- Registro de compras (productos, cantidades, precios).
+- Gestión de proveedores (datos y **historial** de compras).
 
-## Running unit tests
+### Usuarios y Seguridad
+- Gestión de usuarios con roles: **Administrador, Cajero, Almacenero**.
+- Restricción de acceso por rol.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### Reportes
+- Reportes diarios/semanales/mensuales (ventas, inventario, compras).
+- Exportación de reportes a **PDF / Excel**.
 
-## Running end-to-end tests
+---
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+## 🧑‍💼 Roles del sistema
+- **Administrador:** configuración general, usuarios, reportes y auditoría.
+- **Cajero:** ventas, comprobantes y operaciones de caja.
+- **Almacenero:** productos, inventario, stock y alertas.
 
-## Further help
+---
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## 🧱 Arquitectura (alto nivel)
+Aplicación web moderna basada en:
+- **Frontend:** Angular + Tailwind CSS
+- **Backend (Cloud):** Supabase  
+  - Postgres (Base de datos relacional)
+  - Supabase Auth (roles y acceso)
+  - Storage (archivos, si aplica)
+  - (Opcional) Edge Functions (automatizaciones: alertas/reportes)
+- **Despliegue:** Hosting (usanso el servicio de Github)
+
+> Nota: **La integración con SUNAT aún no está implementada**, se agregará cuando esté lista.
+
+---
+
+## 🧰 Tecnologías usadas
+- **Angular** (Angular CLI)
+- **Tailwind CSS**
+- **Supabase** (Postgres, Auth, Storage, Edge Functions si aplica)
+- **Git/GitHub** (flujo por ramas + Pull Requests)
+
+---
+
+## ✅ Requisitos (No funcionales clave)
+- Venta/compra debe ejecutarse en **< 3 segundos** (operaciones críticas).
+- Disponibilidad mínima esperada: **99%** en horario comercial.
+- Validaciones de datos obligatorios y control de acceso por rol.
+
+---
+
+## 🌐 Enlace de la aplicación
+- Demo / Web: **[Ver la aplicación](https://cristhianhuamanyauris.github.io/Frhema/)**
+
+---
+
+## 🚀 Instalación y ejecución (local)
+
+### Prerrequisitos
+- Node.js (recomendado versión moderna LTS)
+- Angular CLI (versión del proyecto):
+  ```bash
+  npm install -g @angular/cli@18

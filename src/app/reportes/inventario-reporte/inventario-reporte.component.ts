@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-
-// 🔥 IMPORTS NECESARIOS PARA STANDALONE
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 
 import { ReportesService } from '../../core/services/reportes/reportes.service';
@@ -46,10 +44,89 @@ export class InventarioReporteComponent implements OnInit {
   // 📦 EXPORTAR A EXCEL
   // =====================================================
   exportarExcel() {
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(this.inventarioCompleto);
-    XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
-    XLSX.writeFile(wb, 'reporte_inventario.xlsx');
+    try {
+      if (this.inventarioCompleto.length === 0) {
+        alert('No hay productos para exportar.');
+        return;
+      }
+
+      const datosExportar = this.inventarioCompleto.map((item: any) => ({
+        'Código': item.codigo || '',
+        'Nombre': item.nombre || '',
+        'Categoría': item.categoria || '',
+        'Unidad de Medida': item.unidad_medida || '',
+        'Stock Actual': item.stock_actual || 0,
+        'Stock Mínimo': item.stock_minimo || 0,
+        'Precio Unitario': item.precio_unitario || 0,
+        'Precio Mayor': item.precio_mayor || 0,
+        'Estado': item.activo !== false ? 'Activo' : 'Inactivo',
+        'Marca': item.marca || '',
+        'Descripción': item.descripcion || ''
+      }));
+
+      const fechaExportacion = new Date().toLocaleString('es-PE', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      const encabezados = ['Código', 'Nombre', 'Categoría', 'Unidad de Medida', 'Stock Actual', 'Stock Mínimo', 'Precio Unitario', 'Precio Mayor', 'Estado', 'Marca', 'Descripción'];
+
+      const datosCompletos: any[] = [
+        ['REPORTE DE INVENTARIO'],
+        ['FERRETERÍA RHEMA'],
+        [`Fecha de Exportación: ${fechaExportacion}`],
+        [`Total de Productos: ${this.inventarioCompleto.length}`],
+        [],
+        encabezados,
+        ...datosExportar.map((item: any) => [
+          item['Código'],
+          item['Nombre'],
+          item['Categoría'],
+          item['Unidad de Medida'],
+          item['Stock Actual'],
+          item['Stock Mínimo'],
+          item['Precio Unitario'],
+          item['Precio Mayor'],
+          item['Estado'],
+          item['Marca'],
+          item['Descripción']
+        ])
+      ];
+
+      const wb = XLSX.utils.book_new();
+      
+      const ws = XLSX.utils.aoa_to_sheet(datosCompletos);
+
+      const columnWidths = [
+        { wch: 15 },  // Código
+        { wch: 30 },  // Nombre
+        { wch: 20 },  // Categoría
+        { wch: 15 },  // Unidad de Medida
+        { wch: 12 },  // Stock Actual
+        { wch: 12 },  // Stock Mínimo
+        { wch: 15 },  // Precio Unitario
+        { wch: 15 },  // Precio Mayor
+        { wch: 12 },  // Estado
+        { wch: 20 },  // Marca
+        { wch: 40 }   // Descripción
+      ];
+      ws['!cols'] = columnWidths;
+
+      XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
+
+      const fecha = new Date().toISOString().split('T')[0];
+      const nombreArchivo = `reporte_inventario_${fecha}.xlsx`;
+
+      XLSX.writeFile(wb, nombreArchivo);
+
+      alert(`Archivo Excel exportado correctamente: ${nombreArchivo}\n\nTotal de productos: ${this.inventarioCompleto.length}`);
+    } catch (error) {
+      console.error('Error al exportar a Excel:', error);
+      alert('Error al exportar el archivo Excel. Por favor, intente nuevamente.');
+    }
   }
 
   // =====================================================

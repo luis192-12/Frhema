@@ -34,8 +34,11 @@
     <div class="w-full max-w-[360px] md:max-w-[360px] px-8 md:px-12 py-10 box-border bg-transparent mx-auto">
       <h2 class="m-0 mb-6 text-[1.6rem] font-semibold text-gray-900">Registro</h2>
 
-      <div *ngIf="errorMessage" class="mt-3 text-[0.9rem] text-red-700 bg-red-50 rounded-xl py-2.5 px-3.5 border border-red-200">
-        {{ errorMessage }}
+      <div *ngIf="errorMessage" class="mt-3 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2">
+        <svg class="w-5 h-5 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span class="text-sm text-red-700 font-medium">{{ errorMessage }}</span>
       </div>
 
       <form (ngSubmit)="register()" class="flex flex-col gap-4">
